@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 //<summary>
 //Basic class for maze generation logic
@@ -24,7 +23,7 @@ public abstract class BasicMazeGenerator {
 		mMaze = new MazeCell[rows,columns];
 		for (int row = 0; row < rows; row++) {
 			for(int column = 0; column < columns; column++){
-				mMaze[row,column] = new MazeCell();
+				mMaze[row,column] = new MazeCell(row, column);
 			}
 		}
 	}

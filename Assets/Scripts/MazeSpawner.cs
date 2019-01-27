@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 //<summary>
 //Game object, that creates maze and instantiates it in scene
@@ -13,15 +14,15 @@ public class MazeSpawner : MonoBehaviour {
 	//public GameObject Pillar = null;
 	public int Rows = 5;
 	public int Columns = 5;
-	public float CellWidth = 5;
-	public float CellHeight = 5;
+    public float CellWidth { get { return 4f; } }
+    public float CellHeight { get { return 4f; } }
 	public bool AddGaps = true;
 
 	private BasicMazeGenerator mMazeGenerator = null;
 
 	void Start () {
 		if (!FullRandom) {
-			Random.seed = RandomSeed;
+            UnityEngine.Random.seed = RandomSeed;
 		}
         mMazeGenerator = new RecursiveMazeGenerator(Rows, Columns);
         mMazeGenerator.GenerateMaze ();
@@ -33,9 +34,8 @@ public class MazeSpawner : MonoBehaviour {
 				GameObject tmp;
 				tmp = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
 				tmp.transform.parent = transform;
-                if(cell.IsPathToGoal || cell.IsGoal)
-                {
-                    tmp.transform.GetComponent<Renderer>().material.color = Color.red;
+                if(cell.IsPathToGoal || cell.IsGoal) {
+                    tmp.GetComponent<Renderer>().material.color = new Color32(19, 26, 132, 255);
                 }
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+CellWidth/2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
@@ -66,4 +66,14 @@ public class MazeSpawner : MonoBehaviour {
 			}
 		}*/
 	}
+
+    public Optional<MazeCell> GetMazeCell(int row, int column) {
+        try {
+            MazeCell cell = mMazeGenerator.GetMazeCell(row, column);
+            return Optional<MazeCell>.Of(cell);
+        } catch(ArgumentOutOfRangeException) {
+            return Optional<MazeCell>.Empty();
+        }
+    }
+
 }
