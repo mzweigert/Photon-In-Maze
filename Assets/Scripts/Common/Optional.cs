@@ -1,6 +1,6 @@
 ﻿using System;
 
-public sealed class Optional<T>{
+public  class Optional<T>{
     private static readonly Optional<T> EMPTY = new Optional<T>();
     private readonly T value;
 
