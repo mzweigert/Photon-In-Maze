@@ -21,11 +21,17 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
     [SerializeField]
     private Canvas canvas;
 
-    public Optional<Camera> GetCamera() {
+    public Camera GetCamera() {
         LogIfObjectIsNull(camera, "Camera");
-        return Optional<Camera>.OfNullable(camera);
+        return camera;
     }
 
+    public Optional<CameraController> GetCameraScriptt() {
+        var script = FindObjectOfType<CameraController>();
+        LogIfObjectIsNull(script, "CameraController");
+        return Optional<CameraController>.OfNullable(script);
+
+    }
     public Light GetDirectionalLight() {
         LogIfObjectIsNull(directionalLight, "DirectionalLight");
         return directionalLight;
@@ -37,9 +43,9 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
         return Optional<LightController>.OfNullable(script);
     }
 
-    public Optional<GameObject> GetMaze() {
+    public GameObject GetMaze() {
         LogIfObjectIsNull(maze, "Maze");
-        return Optional<GameObject>.OfNullable(maze);
+        return maze;
     }
 
     public Optional<MazeController> GetMazeScript() {
@@ -48,9 +54,9 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
         return Optional<MazeController>.OfNullable(script);
     }
 
-    public Optional<GameObject> GetPhoton() {
+    public GameObject GetPhoton() {
         LogIfObjectIsNull(photon, "Photon");
-        return Optional<GameObject>.OfNullable(photon);
+        return photon;
     }
 
     public Optional<PhotonConroller> GetPhotonScript() {

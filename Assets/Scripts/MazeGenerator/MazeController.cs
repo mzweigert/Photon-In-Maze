@@ -8,15 +8,20 @@ using System.Collections.Generic;
 //</summary>
 public class MazeController : MonoBehaviour {
 
-	public bool FullRandom = false;
-	public int RandomSeed = 12345;
-	public GameObject Floor = null;
-	public GameObject Wall = null;
+    [SerializeField]
+    private bool FullRandom = false;
+    [SerializeField]
+    private int RandomSeed = 12345;
+    [SerializeField]
+    private GameObject Floor = null;
+    [SerializeField]
+    private GameObject Wall = null;
 	//public GameObject Pillar = null;
-	public int Rows = 5;
-	public int Columns = 5;
+    [Range(1, 60)]
+    public int Rows = 5;
+    [Range(1, 60)]
+    public int Columns = 5;
     public float LenghtSide { get { return 4f; } }
-	public bool AddGaps = true;
     public List<GameObject> PathsToGoal { get; private set; }
 
 	private BasicMazeGenerator mMazeGenerator = null;
@@ -30,8 +35,8 @@ public class MazeController : MonoBehaviour {
         mMazeGenerator.GenerateMaze();
 		for (int row = 0; row < Rows; row++) {
 			for(int column = 0; column < Columns; column++){
-				float x = column*(LenghtSide + (AddGaps?.2f:0));
-				float z = row*(LenghtSide + (AddGaps?.2f:0));
+				float x = column * LenghtSide;
+				float z = row * LenghtSide;
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
 				GameObject tmp;
 				tmp = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;

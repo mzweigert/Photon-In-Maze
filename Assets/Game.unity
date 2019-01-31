@@ -257,7 +257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: orthographic size
-      value: 22.5
+      value: 28.64
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: m_RenderingPath
@@ -269,7 +269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: field of view
-      value: 55
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: m_BackGroundColor.r
@@ -333,9 +333,8 @@ MonoBehaviour:
   RandomSeed: 3
   Floor: {fileID: 165842, guid: 8d3b36f175a633f429d7bda54c76550d, type: 3}
   Wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
-  Rows: 20
-  Columns: 10
-  AddGaps: 0
+  Rows: 30
+  Columns: 15
 --- !u!1 &1210011196
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,6 +397,7 @@ GameObject:
   - component: {fileID: 1346720325}
   - component: {fileID: 1346720324}
   - component: {fileID: 1346720323}
+  - component: {fileID: 1346720328}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -457,9 +457,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 50
-  field of view: 55
+  field of view: 60
   orthographic: 0
-  orthographic size: 22.5
+  orthographic size: 28.64
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -490,6 +490,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: -90, z: 0}
+--- !u!114 &1346720328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346720322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dd8fce86b6f9794e878ea68a2c2e32a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1814763716 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4912503985215716925, guid: f3f59eaf5176bcc4890e35704a6432df,

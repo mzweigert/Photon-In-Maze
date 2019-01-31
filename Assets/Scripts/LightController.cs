@@ -6,6 +6,7 @@ public class LightController : MonoBehaviour {
     private bool lightConfigured = false;
     private bool audioPlayed = false;
     private AudioSource audioSource;
+    private float targetLightIntensity = 0.05f;
     // Start is called before the first frame update
     void Start() {
         audioSource = GetComponent<AudioSource>();
@@ -20,14 +21,14 @@ public class LightController : MonoBehaviour {
                 return;
             }
 
-            if(light.intensity >= 0.15f) {
+            if(light.intensity >= targetLightIntensity) {
                 light.intensity -= Time.deltaTime * 7.5f;
                 if(!audioPlayed) {
                     audioPlayed = true;
                     audioSource.Play();
                 }
             } else {
-                light.intensity = 0.15f;
+                light.intensity = targetLightIntensity;
                 lightConfigured = true;
                
             }
