@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 //<summary>
@@ -10,7 +11,7 @@ public abstract class BasicMazeGenerator {
 
     private MazeCell[,] mMaze;
 
-	public BasicMazeGenerator(int rows, int columns){
+	public BasicMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) {
 		RowCount = Mathf.Abs(rows);
 		ColumnCount = Mathf.Abs(columns);
 		if (RowCount == 0) {
@@ -22,12 +23,13 @@ public abstract class BasicMazeGenerator {
 		mMaze = new MazeCell[rows,columns];
 		for (int row = 0; row < rows; row++) {
 			for(int column = 0; column < columns; column++){
-				mMaze[row,column] = new MazeCell(row, column);
-			}
+                MazeCell cell = new MazeCell(row, column, createRealObjFunction);
+                mMaze[row, column] = cell;
+            }
 		}
 	}
 
-	public abstract void GenerateMaze();
+	public abstract LinkedList<MazeCell> GenerateMaze();
 
 	public MazeCell GetMazeCell(int row, int column){
 		if (row >= 0 && column >= 0 && row < RowCount && column < ColumnCount) {

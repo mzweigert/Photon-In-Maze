@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 //<summary>
 //Pure recursive maze generation.
@@ -7,13 +9,15 @@
 public class RecursiveMazeGenerator : BasicMazeGenerator {
 
     private bool isInRange = false;
+    private LinkedList<MazeCell> pathToGoal;
 
-    public RecursiveMazeGenerator(int rows, int columns) : base(rows, columns) {
-
+    public RecursiveMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) : base(rows, columns, createRealObjFunction) {
+        pathToGoal = new LinkedList<MazeCell>();
     }
 
-    public override void GenerateMaze() {
+    public override LinkedList<MazeCell> GenerateMaze() {
         VisitCell(GetMazeCell(0, 0), Direction.Start);
+        return pathToGoal;
     }
 
     private void VisitCell(MazeCell current, Direction moveMade) {
@@ -42,6 +46,7 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
                     GetMazeCell(current.Row + 1, current.Column).WallBack = true;
                 }
             } else if(isExitCell) {
+                pathToGoal.AddLast(current);
                 current.IsGoal = true;
             }
 
@@ -74,6 +79,7 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
             } else if(!isExitCell && IsATrap(visitedCells, current)) {
                 current.IsTrap = true;
             } else if(!isExitCell && visitedCells.Exists(cell => cell.IsPathToGoal || cell.IsGoal)) {
+                pathToGoal.AddFirst(current);
                 current.IsPathToGoal = true;
             }
 

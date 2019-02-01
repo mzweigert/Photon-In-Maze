@@ -1,4 +1,7 @@
 ﻿
+using System;
+using UnityEngine;
+
 public enum Direction {
     Start,
     Right,
@@ -11,9 +14,10 @@ public enum Direction {
 //</summary>
 public class MazeCell {
 
-    public MazeCell(int row, int column) {
+    public MazeCell(int row, int column, Func<MazeCell, GameObject> createRealObjFunction) {
         this.Row = row;
         this.Column = column;
+        this.RealObject = createRealObjFunction.Invoke(this);
     }
 
     public void SetWall(Direction direction) {
@@ -33,20 +37,18 @@ public class MazeCell {
         }
     }
 
-    public bool IsVisited = false;
-    public bool WallRight = false;
-    public bool WallFront = false;
-    public bool WallLeft = false;
-    public bool WallBack = false;
-    public bool IsPathToGoal = false;
-    public bool IsGoal = false;
-    public bool IsTrap = false;
 
+    public bool IsVisited { get; set; } = false;
+    public bool WallRight { get; set; } = false;
+    public bool WallFront { get; set; } = false;
+    public bool WallLeft { get; set; } = false;
+    public bool WallBack { get; set; } = false;
+    public bool IsPathToGoal { get; set; } = false;
+    public bool IsGoal { get; set; } = false;
+    public bool IsTrap { get; set; } = false;
+
+    public GameObject RealObject { get; private set; }
+    public Vector3 RealObjectPosition { get { return RealObject != null ? RealObject.transform.position : Vector3.zero; } }
     public int Column { get; }
-
     public int Row { get; }
-    public static MazeCell StartCell { get {
-            return new MazeCell(0, 0);
-        }
-    }
 }

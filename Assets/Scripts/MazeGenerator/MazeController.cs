@@ -22,28 +22,31 @@ public class MazeController : MonoBehaviour {
     [Range(1, 60)]
     public int Columns = 5;
     public float LenghtSide { get { return 4f; } }
-    public List<GameObject> PathsToGoal { get; private set; }
+    public LinkedList<MazeCell> PathsToGoal { get; private set; }
 
-	private BasicMazeGenerator mMazeGenerator = null;
+    private BasicMazeGenerator mMazeGenerator = null;
 
 	void Start () {
-        PathsToGoal = new List<GameObject>();
 		if (!FullRandom) {
             UnityEngine.Random.InitState(RandomSeed);
 		}
-        mMazeGenerator = new RecursiveMazeGenerator(Rows, Columns);
-        mMazeGenerator.GenerateMaze();
+        Func<MazeCell, GameObject> createRealObject = (MazeCell cell) => {
+            return Instantiate(
+            Floor,
+            new Vector3(cell.Column * LenghtSide, 0, cell.Row * LenghtSide),
+            Quaternion.Euler(0, 0, 0)) as GameObject;
+        };
+        mMazeGenerator = new RecursiveMazeGenerator(Rows, Columns, createRealObject);
+        PathsToGoal = mMazeGenerator.GenerateMaze();
 		for (int row = 0; row < Rows; row++) {
 			for(int column = 0; column < Columns; column++){
 				float x = column * LenghtSide;
 				float z = row * LenghtSide;
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
-				GameObject tmp;
-				tmp = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
+				GameObject tmp = cell.RealObject;
 				tmp.transform.parent = transform;
                 if(cell.IsPathToGoal || cell.IsGoal) {
                     tmp.GetComponent<Renderer>().material.color = Values.COLOR.Navy;
-                    PathsToGoal.Add(tmp);
                 }
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+ LenghtSide / 2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
@@ -77,9 +80,8 @@ public class MazeController : MonoBehaviour {
 
     void Update() {
         Utils.CheckIfGameRunningAndCallUpdate(() => {
-
-            foreach(GameObject cell in PathsToGoal) {
-                Material material = cell.GetComponent<Renderer>().material;
+            foreach(MazeCell cell in PathsToGoal) {
+                Material material = cell.RealObject.GetComponent<Renderer>().material;
                 material.color = Color.Lerp(material.color, Values.COLOR.Ocean, 0.05f);
             }
         });

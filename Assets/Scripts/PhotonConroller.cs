@@ -6,14 +6,14 @@ public class PhotonConroller : MonoBehaviour {
 
     private Vector2 fingerStart;
     private Vector2 fingerEnd;
-    private Vector3 currentPos;
-    private Vector3 nextPos;
-    private MazeController mazeController;
-    private MazeCell currentCell;
+    private Optional<MazeController> mazeController;
     private bool canSwipe;
     private bool actuallyMoving;
     private float minDistanceToNextMove = 0.001f;
-    private Queue<Vector3> movements;
+    private MazeCell currentCell, lastSaved;
+    private Queue<MazeCell> movementsToMake;
+
+    public bool IsInPathToGoal { get; private set; }
 
     public enum Movement {
         Left,
@@ -24,28 +24,38 @@ public class PhotonConroller : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        movements = new Queue<Vector3>();
-        currentPos = transform.position;
-        nextPos = currentPos;
+        mazeController = ObjectsManager.Instance.GetMazeScript();
+        if(!mazeController.HasValue) {
+            Debug.LogError("MazeController not preset!");
+            return;
+        }
+        movementsToMake = new Queue<MazeCell>();
         canSwipe = true;
         actuallyMoving = false;
-        mazeController = FindObjectOfType<MazeController>();
-        currentCell = mazeController.GetMazeCell(0, 0).Get();
+        currentCell = mazeController.Get().GetMazeCell(0, 0).Get();
+        lastSaved = currentCell;
     }
 
     // Update is called once per frame
     void Update() {
+        mazeController = ObjectsManager.Instance.GetMazeScript();
+        if(!mazeController.HasValue) {
+            return;
+        }
         Utils.CheckIfGameRunningAndCallUpdate(() => {
-            if(movements.Count > 0 && !actuallyMoving) {
-                currentPos = movements.Dequeue();
+            if(movementsToMake.Count > 0 && !actuallyMoving) {
+                currentCell = movementsToMake.Dequeue();
                 actuallyMoving = true;
+                ObjectsManager.Instance
+                .GetMazeScript()
+                .ForValuePresented((script) => IsInPathToGoal = script.PathsToGoal.Contains(currentCell));
             } else if(actuallyMoving) {
-                transform.position = Vector3.Lerp(transform.position, currentPos, 0.5f);
-                if(Vector3.Distance(transform.position, currentPos) <= minDistanceToNextMove) {
+                transform.position = Vector3.Lerp(transform.position, currentCell.RealObjectPosition, 0.5f);
+                if(Vector3.Distance(transform.position, currentCell.RealObjectPosition) <= minDistanceToNextMove) {
                     actuallyMoving = false;
                 }
             }
-
+           
             foreach(Touch touch in Input.touches) {
                 if(touch.phase == TouchPhase.Began) {
                     fingerStart = touch.position;
@@ -67,44 +77,42 @@ public class PhotonConroller : MonoBehaviour {
     }
 
     private void NextMove(Movement movementDirection) {
-        Vector3 newPosition = Vector3.zero;
+        if(!mazeController.HasValue) {
+            return;
+        }
+        MazeController mazeScript = mazeController.Get();
 
         switch(movementDirection) {
             case Movement.Left:
-                if(!currentCell.WallBack) {
-                    newPosition = new Vector3(nextPos.x, nextPos.y, nextPos.z - mazeController.LenghtSide);
-                    mazeController.GetMazeCell(currentCell.Row - 1, currentCell.Column)
-                        .ForValuePresented(cell => UpdateCellPosition(cell, newPosition));
+                if(!lastSaved.WallBack) {
+                    mazeScript.GetMazeCell(lastSaved.Row - 1, lastSaved.Column)
+                          .ForValuePresented(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Right:
-                if(!currentCell.WallFront) {
-                    newPosition = new Vector3(nextPos.x, nextPos.y, nextPos.z + mazeController.LenghtSide);
-                    mazeController.GetMazeCell(currentCell.Row + 1, currentCell.Column)
-                        .ForValuePresented(cell => UpdateCellPosition(cell, newPosition));
+                if(!lastSaved.WallFront) {
+                    mazeScript.GetMazeCell(lastSaved.Row + 1, lastSaved.Column)
+                         .ForValuePresented(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Up:
-                if(!currentCell.WallLeft) {
-                    newPosition = new Vector3(nextPos.x - mazeController.LenghtSide, nextPos.y, nextPos.z);
-                    mazeController.GetMazeCell(currentCell.Row, currentCell.Column - 1)
-                        .ForValuePresented(cell => UpdateCellPosition(cell, newPosition));
+                if(!lastSaved.WallLeft) {
+                    mazeScript.GetMazeCell(lastSaved.Row, lastSaved.Column - 1)
+                         .ForValuePresented(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Down:
-                if(!currentCell.WallRight) {
-                    newPosition = new Vector3(nextPos.x + mazeController.LenghtSide, nextPos.y, nextPos.z);
-                    mazeController.GetMazeCell(currentCell.Row, currentCell.Column +1)
-                        .ForValuePresented(cell => UpdateCellPosition(cell, newPosition));
+                if(!lastSaved.WallRight) {
+                    mazeScript.GetMazeCell(lastSaved.Row, lastSaved.Column + 1)
+                        .ForValuePresented(newCell => UpdateCellPosition(newCell));
                 }
                 break;
         }
     }
 
-    private void UpdateCellPosition(MazeCell cell, Vector3 newPosition) {
-        currentCell = cell;
-        movements.Enqueue(newPosition);
-        nextPos = newPosition;
+    private void UpdateCellPosition(MazeCell newCell) {
+        lastSaved = newCell;
+        movementsToMake.Enqueue(newCell);
     }
 
     private Movement GetTouchMovementDirection() {
