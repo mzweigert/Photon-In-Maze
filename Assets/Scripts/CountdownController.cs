@@ -23,13 +23,12 @@ public class CountdownController : MonoBehaviour {
                 audioPlayed = true;
                 audioSource.Play();
             } else if(toStart < 0) {
-                Values.Instance.StartGame();
+                GameEvent.Instance.TryTurnOffLight();
                 Destroy(gameObject);
             }
             elapsed = 0f;
             gameObject.GetComponent<Text>().text = toStart > 0 ? (toStart).ToString() : "Go";
             --toStart;
-
         }
     }
 

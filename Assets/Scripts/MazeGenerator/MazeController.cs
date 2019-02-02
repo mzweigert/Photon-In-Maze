@@ -23,6 +23,7 @@ public class MazeController : MonoBehaviour {
     public int Columns = 5;
     public float LenghtSide { get { return 4f; } }
     public LinkedList<MazeCell> PathsToGoal { get; private set; }
+    private bool pathColorChanged = false;
 
     private BasicMazeGenerator mMazeGenerator = null;
 
@@ -46,7 +47,7 @@ public class MazeController : MonoBehaviour {
 				GameObject tmp = cell.RealObject;
 				tmp.transform.parent = transform;
                 if(cell.IsPathToGoal || cell.IsGoal) {
-                    tmp.GetComponent<Renderer>().material.color = Values.COLOR.Navy;
+                    tmp.GetComponent<Renderer>().material.color = Colors.Navy;
                 }
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+ LenghtSide / 2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
@@ -79,11 +80,16 @@ public class MazeController : MonoBehaviour {
 	}
 
     void Update() {
-        Utils.CheckIfGameRunningAndCallUpdate(() => {
+        GameEvent.Instance.CheckIfGameRunningAndCallUpdate(() => {
+            if(pathColorChanged) {
+                return;
+            }
+
             foreach(MazeCell cell in PathsToGoal) {
                 Material material = cell.RealObject.GetComponent<Renderer>().material;
-                material.color = Color.Lerp(material.color, Values.COLOR.Ocean, 0.05f);
+                material.color = Colors.Ocean;
             }
+            pathColorChanged = true;
         });
     }
 

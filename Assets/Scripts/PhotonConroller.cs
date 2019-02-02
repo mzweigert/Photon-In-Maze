@@ -1,26 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
+public struct PhotonInPathToGoalInfo {
+    public bool IsInPathToGoal { get; set; }
+    public int PositionInPathToGoal { get; set; }
+}
 
-public class PhotonConroller : MonoBehaviour {
+public enum Movement {
+    Left,
+    Right,
+    Up,
+    Down
+};
+
+public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo> {
+
+    private Optional<MazeController> mazeController;
 
     private Vector2 fingerStart;
     private Vector2 fingerEnd;
-    private Optional<MazeController> mazeController;
     private bool canSwipe;
     private bool actuallyMoving;
-    private float minDistanceToNextMove = 0.001f;
+
+    private float minDistanceToNextMove = 0.1f;
     private MazeCell currentCell, lastSaved;
+    private LinkedListNode<MazeCell> currentFromPathToGoal;
     private Queue<MazeCell> movementsToMake;
 
-    public bool IsInPathToGoal { get; private set; }
+    private List<IObserver<PhotonInPathToGoalInfo>> observers;
+    private PhotonInPathToGoalInfo photonInPathToGoalInfo;
 
-    public enum Movement {
-        Left,
-        Right,
-        Up,
-        Down
-    };
+    private Light photonLight;
+    private bool photonLightAlreadySet;
 
     // Start is called before the first frame update
     void Start() {
@@ -29,11 +41,19 @@ public class PhotonConroller : MonoBehaviour {
             Debug.LogError("MazeController not preset!");
             return;
         }
+        observers = new List<IObserver<PhotonInPathToGoalInfo>>();
         movementsToMake = new Queue<MazeCell>();
         canSwipe = true;
         actuallyMoving = false;
-        currentCell = mazeController.Get().GetMazeCell(0, 0).Get();
+        photonInPathToGoalInfo = new PhotonInPathToGoalInfo();
+        photonInPathToGoalInfo.IsInPathToGoal = true;
+        currentFromPathToGoal = mazeController.Get()
+            .PathsToGoal
+            .First;
+        currentCell = currentFromPathToGoal.Value;
         lastSaved = currentCell;
+        photonLight = GetComponentInChildren<Light>();
+        photonLight.intensity = 0f;
     }
 
     // Update is called once per frame
@@ -42,16 +62,24 @@ public class PhotonConroller : MonoBehaviour {
         if(!mazeController.HasValue) {
             return;
         }
-        Utils.CheckIfGameRunningAndCallUpdate(() => {
+        if(GameEvent.Instance.IsLightTurnedOff && !photonLightAlreadySet) {
+            photonLight.intensity = 7.5f;
+            photonLightAlreadySet = true;
+            GameEvent.Instance.StartGame();
+        }
+
+        GameEvent.Instance.CheckIfGameRunningAndCallUpdate(() => {
+            
             if(movementsToMake.Count > 0 && !actuallyMoving) {
                 currentCell = movementsToMake.Dequeue();
                 actuallyMoving = true;
-                ObjectsManager.Instance
-                .GetMazeScript()
-                .ForValuePresented((script) => IsInPathToGoal = script.PathsToGoal.Contains(currentCell));
+                ChangePositionInfoInPathToGoal(currentCell);
             } else if(actuallyMoving) {
-                transform.position = Vector3.Lerp(transform.position, currentCell.RealObjectPosition, 0.5f);
-                if(Vector3.Distance(transform.position, currentCell.RealObjectPosition) <= minDistanceToNextMove) {
+                Vector3 targetPosition 
+                        = new Vector3(currentCell.RealObjectPosition.x, transform.position.y, currentCell.RealObjectPosition.z);
+                transform.position = Vector3.Lerp(transform.position, targetPosition, 0.5f);
+                if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
+                    transform.position = targetPosition;
                     actuallyMoving = false;
                 }
             }
@@ -74,6 +102,26 @@ public class PhotonConroller : MonoBehaviour {
                 }
             }
         });
+    }
+
+    private void ChangePositionInfoInPathToGoal(MazeCell currentCell) {
+        if(currentCell.Equals(currentFromPathToGoal.Next.Value)) {
+            currentFromPathToGoal = currentFromPathToGoal.Next;
+            photonInPathToGoalInfo.PositionInPathToGoal++;
+        } else if(currentCell.Equals(currentFromPathToGoal.Previous.Value)) {
+            currentFromPathToGoal = currentFromPathToGoal.Previous;
+            photonInPathToGoalInfo.PositionInPathToGoal--;
+        } else if(!currentCell.Equals(currentFromPathToGoal.Value)) {
+            if(photonInPathToGoalInfo.IsInPathToGoal) {
+                photonInPathToGoalInfo.IsInPathToGoal = false;
+            }
+            return;
+        }
+        if(!photonInPathToGoalInfo.IsInPathToGoal) {
+            photonInPathToGoalInfo.IsInPathToGoal = true;
+        }
+
+        observers.ForEach((observer) => observer.OnNext(photonInPathToGoalInfo));
     }
 
     private void NextMove(Movement movementDirection) {
@@ -123,5 +171,14 @@ public class PhotonConroller : MonoBehaviour {
         } else {
             return (fingerEnd.y - fingerStart.y) > 0 ? Movement.Up : Movement.Down;
         }
+    }
+
+    public IDisposable Subscribe(IObserver<PhotonInPathToGoalInfo> observer) {
+        if(!observers.Contains(observer)) {
+            observers.Add(observer);
+            // Provide observer with existing data.
+            observer.OnNext(photonInPathToGoalInfo);
+        }
+        return new Unsubscriber<PhotonInPathToGoalInfo>(observers, observer);
     }
 }

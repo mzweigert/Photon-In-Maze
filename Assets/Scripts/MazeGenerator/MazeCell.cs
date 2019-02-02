@@ -37,6 +37,19 @@ public class MazeCell {
         }
     }
 
+    public override bool Equals(object obj) {
+        var cell = obj as MazeCell;
+        return cell != null &&
+               Column == cell.Column &&
+               Row == cell.Row;
+    }
+
+    public override int GetHashCode() {
+        var hashCode = 656739706;
+        hashCode = hashCode * -1521134295 + Column.GetHashCode();
+        hashCode = hashCode * -1521134295 + Row.GetHashCode();
+        return hashCode;
+    }
 
     public bool IsVisited { get; set; } = false;
     public bool WallRight { get; set; } = false;
@@ -51,4 +64,6 @@ public class MazeCell {
     public Vector3 RealObjectPosition { get { return RealObject != null ? RealObject.transform.position : Vector3.zero; } }
     public int Column { get; }
     public int Row { get; }
+
+
 }
