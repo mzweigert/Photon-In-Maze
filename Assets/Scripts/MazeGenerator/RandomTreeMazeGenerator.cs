@@ -5,8 +5,6 @@ using System.Collections.Generic;
 //Basic class for Tree generation logic.
 //Subclasses moust override GetCellInRange to implement selecting strategy.
 //</summary>
-
-
 public class RandomTreeMazeGenerator : BasicMazeGenerator {
 
     CellsToVisit cellsToVisit;
@@ -16,7 +14,7 @@ public class RandomTreeMazeGenerator : BasicMazeGenerator {
         cellsToVisit = new CellsToVisit();
     }
 
-    public override LinkedList<MazeCell> GenerateMaze() {
+    protected override void GenerateMaze() {
         bool isInRange = false;
         List<Direction> movesAvailable;
         CellToVisit ctv = new CellToVisit(Random.Range(0, RowCount), Random.Range(0, ColumnCount), Direction.Start);
@@ -77,66 +75,13 @@ public class RandomTreeMazeGenerator : BasicMazeGenerator {
             GetMazeCell(ctv.Row, ctv.Column).IsVisited = true;
 
             if(movesAvailable.Count > 0) {
-                FindNextToVisit(movesAvailable, ctv.Row, ctv.Column)
+                finder.FindNextToVisit(movesAvailable, ctv.Row, ctv.Column)
                     .IfPresent((nextCTV) => cellsToVisit.Add(nextCTV));
             } else {
                 cellsToVisit.Remove(ctv);
             }
         }
-
-        return FindPathToGoal();
     }
 
-    private LinkedList<MazeCell> FindPathToGoal() {
-        MazeCell exitCell = GetMazeCell(RowCount - 1, ColumnCount - 1);
-        exitCell.IsGoal = true;
-        exitCell.WallFront = false;
-        LinkedList<MazeCell> path = FindPathToGoal(exitCell, Direction.Start);
-        return path;
-    }
-
-    private LinkedList<MazeCell> FindPathToGoal(MazeCell current, Direction moveMade) {
-        LinkedList<MazeCell> pathToGoal = new LinkedList<MazeCell>();
-        List<Direction> movesAvailable = current.GetPossibleMoveDirection();
-        if(moveMade != Direction.Start) {
-            movesAvailable.Remove(GetOposedMove(moveMade));
-        } else if(current.IsExitCell(RowCount, ColumnCount)) {
-            movesAvailable.Remove(Direction.Front);
-        }
-        HashSet<MazeCell> visitedCells = new HashSet<MazeCell>();
-        while(movesAvailable.Count > 0) {
-            FindNextToVisit(movesAvailable, current.Row, current.Column).IfPresent((ctv) => {
-                MazeCell next = GetMazeCell(ctv.Row, ctv.Column);
-                next.IsPathToGoal = true;
-                visitedCells.Add(next);
-                movesAvailable.Remove(ctv.MoveMade);
-                LinkedList<MazeCell> pathInNext = FindPathToGoal(next, ctv.MoveMade);
-                if(pathInNext.Count > 0) {
-                    pathToGoal = pathInNext;
-                }
-            });
-        }
-
-        if(current.IsExitCell(RowCount, ColumnCount) || current.IsStartCell() || IsPathToGoalVisited(visitedCells)) {
-            pathToGoal.AddLast(current);
-        } else if(current.IsNotExitCell(RowCount, ColumnCount) && IsATrap(visitedCells, current)) {
-            current.IsTrap = true;
-            current.IsPathToGoal = false;
-        }
-        return pathToGoal;
-    }
-
-    private Direction GetOposedMove(Direction moveMade) {
-        switch(moveMade) {
-            case Direction.Left:
-                return Direction.Right;
-            case Direction.Right:
-                return Direction.Left;
-            case Direction.Front:
-                return Direction.Back;
-            case Direction.Back:
-                return Direction.Front;
-        }
-        return Direction.Start;
-    }
+   
 }

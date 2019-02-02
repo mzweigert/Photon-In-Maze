@@ -6,13 +6,15 @@ using UnityEngine;
 //Basic class for maze generation logic
 //</summary>
 public abstract class BasicMazeGenerator {
+
     public int RowCount { get; }
     public int ColumnCount { get; }
+    protected MazeCellFinder finder;
 
     private MazeCell[,] mMaze;
 
 	public BasicMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) {
-		RowCount = Mathf.Abs(rows);
+        RowCount = Mathf.Abs(rows);
 		ColumnCount = Mathf.Abs(columns);
 		if (RowCount == 0) {
 			RowCount = 1;
@@ -27,70 +29,85 @@ public abstract class BasicMazeGenerator {
                 mMaze[row, column] = cell;
             }
 		}
-	}
-
-	public abstract LinkedList<MazeCell> GenerateMaze();
-
-	public MazeCell GetMazeCell(int row, int column){
-		if (row >= 0 && column >= 0 && row < RowCount && column < ColumnCount) {
-			return mMaze[row,column];
-		}else{
-			Debug.Log(row+" "+column);
-			throw new System.ArgumentOutOfRangeException();
-		}
-	}
-
-	protected void SetMazeCell(int row, int column, MazeCell cell){
-		if (row >= 0 && column >= 0 && row < RowCount && column < ColumnCount) {
-			mMaze[row,column] = cell;
-		}else{
-			throw new System.ArgumentOutOfRangeException();
-		}
-	}
+        finder = new MazeCellFinder(RowCount, ColumnCount);
 
 
-    protected bool IsATrap(HashSet<MazeCell> visitedCells, MazeCell currentCell) {
-        if(currentCell.Row == 0 && currentCell.Column == 0) {
-            return false;
-        }
-        if(visitedCells.Count == 0) {
-            return true;
-        }
-        bool allVisitedIsTrap = true;
-        HashSet<MazeCell>.Enumerator enumerator = visitedCells.GetEnumerator();
-        while(enumerator.MoveNext()) {
-            allVisitedIsTrap = allVisitedIsTrap && enumerator.Current.IsTrap;
-        }
-        return allVisitedIsTrap;
     }
 
-    protected bool IsPathToGoalVisited(HashSet<MazeCell> visitedCells) {
-        HashSet<MazeCell>.Enumerator enumerator = visitedCells.GetEnumerator();
-        while(enumerator.MoveNext()) {
-            if(enumerator.Current.IsPathToGoal || enumerator.Current.IsGoal) {
-                return true;
-            }
+    public MazeCell GetMazeCell(int row, int column) {
+        if(row >= 0 && column >= 0 && row < RowCount && column < ColumnCount) {
+            return mMaze[row, column];
+        } else {
+            Debug.Log(row + " " + column);
+            throw new System.ArgumentOutOfRangeException();
         }
-        return false;
     }
 
-    protected Optional<CellToVisit> FindNextToVisit(List<Direction> movesAvailable, int row, int column) {
-        int randomCell = UnityEngine.Random.Range(0, movesAvailable.Count);
-        bool isEndCell = row + 1 == RowCount && column + 1 == ColumnCount;
-        switch(movesAvailable[randomCell]) {
-            case Direction.Start:
-                return Optional<CellToVisit>.Empty();
-            case Direction.Right:
-                return new CellToVisit(row, column + 1, Direction.Right);
-            case Direction.Front:
-                return isEndCell? 
-                    Optional<CellToVisit>.Empty() : 
-                    new CellToVisit(row + 1, column, Direction.Front);
+    protected void SetMazeCell(int row, int column, MazeCell cell) {
+        if(row >= 0 && column >= 0 && row < RowCount && column < ColumnCount) {
+            mMaze[row, column] = cell;
+        } else {
+            throw new System.ArgumentOutOfRangeException();
+        }
+    }
+
+    public LinkedList<MazeCell> GenerateMazeAndFindPathToGoal() {
+        GenerateMaze();
+        return FindPathToGoal();
+    }
+
+    protected abstract void GenerateMaze();
+
+    protected LinkedList<MazeCell> FindPathToGoal() {
+        MazeCell exitCell = GetMazeCell(RowCount - 1, ColumnCount - 1);
+        exitCell.IsGoal = true;
+        exitCell.WallFront = false;
+        LinkedList<MazeCell> path = FindPathToGoal(exitCell, Direction.Start);
+        return path;
+    }
+
+    private LinkedList<MazeCell> FindPathToGoal(MazeCell current, Direction moveMade) {
+        LinkedList<MazeCell> pathToGoal = new LinkedList<MazeCell>();
+        List<Direction> movesAvailable = current.GetPossibleMoveDirection();
+        if(moveMade != Direction.Start) {
+            movesAvailable.Remove(GetOposedMove(moveMade));
+        } else if(current.IsExitCell(RowCount, ColumnCount)) {
+            movesAvailable.Remove(Direction.Front);
+        }
+        HashSet<MazeCell> visitedCells = new HashSet<MazeCell>();
+        while(movesAvailable.Count > 0) {
+            finder.FindNextToVisit(movesAvailable, current.Row, current.Column).IfPresent((ctv) => {
+                MazeCell next = GetMazeCell(ctv.Row, ctv.Column);
+                next.IsPathToGoal = true;
+                visitedCells.Add(next);
+                movesAvailable.Remove(ctv.MoveMade);
+                LinkedList<MazeCell> pathInNext = FindPathToGoal(next, ctv.MoveMade);
+                if(pathInNext.Count > 0) {
+                    pathToGoal = pathInNext;
+                }
+            });
+        }
+
+        if(current.IsExitCell(RowCount, ColumnCount) || current.IsStartCell() || finder.IsPathToGoalVisited(visitedCells)) {
+            pathToGoal.AddLast(current);
+        } else if(current.IsNotExitCell(RowCount, ColumnCount) && finder.IsATrap(visitedCells, current)) {
+            current.IsTrap = true;
+            current.IsPathToGoal = false;
+        }
+        return pathToGoal;
+    }
+
+    private Direction GetOposedMove(Direction moveMade) {
+        switch(moveMade) {
             case Direction.Left:
-                return new CellToVisit(row, column - 1, Direction.Left);
+                return Direction.Right;
+            case Direction.Right:
+                return Direction.Left;
+            case Direction.Front:
+                return Direction.Back;
             case Direction.Back:
-                return new CellToVisit(row - 1, column, Direction.Back);
+                return Direction.Front;
         }
-        return Optional<CellToVisit>.Empty();
+        return Direction.Start;
     }
 }

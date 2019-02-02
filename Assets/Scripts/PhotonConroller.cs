@@ -68,7 +68,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
             GameEvent.Instance.StartGame();
         }
 
-        GameEvent.Instance.CheckIfGameRunningAndCallUpdate(() => {
+        GameEvent.Instance.CallUpdateWhenGameIsRunning(() => {
             
             if(movementsToMake.Count > 0 && !actuallyMoving) {
                 currentCell = movementsToMake.Dequeue();

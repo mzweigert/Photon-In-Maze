@@ -10,6 +10,7 @@ using System.Collections.Generic;
 public enum MazeGenerationAlgorithm {
     PureRecursive,
     RandomTree,
+    Division
 }
 
 public class MazeController : MonoBehaviour {
@@ -46,7 +47,7 @@ public class MazeController : MonoBehaviour {
             Quaternion.Euler(0, 0, 0)) as GameObject;
         };
         mMazeGenerator = GetGenerator(Rows, Columns, createRealObject);
-        PathsToGoal = mMazeGenerator.GenerateMaze();
+        PathsToGoal = mMazeGenerator.GenerateMazeAndFindPathToGoal();
 		for (int row = 0; row < Rows; row++) {
 			for(int column = 0; column < Columns; column++){
 				float x = column * LenghtSide;
@@ -91,6 +92,8 @@ public class MazeController : MonoBehaviour {
         switch(Algorithm) {
             case MazeGenerationAlgorithm.RandomTree:
                 return new RandomTreeMazeGenerator(Rows, Columns, createRealObject);
+            case MazeGenerationAlgorithm.Division:
+                return new DivisionMazeGenerator(Rows, Columns, createRealObject);
             case MazeGenerationAlgorithm.PureRecursive:
             default:
                 return new RecursiveMazeGenerator(Rows, Columns, createRealObject);
@@ -98,7 +101,7 @@ public class MazeController : MonoBehaviour {
     }
 
     void Update() {
-        GameEvent.Instance.CheckIfGameRunningAndCallUpdate(() => {
+        GameEvent.Instance.CallUpdateWhenGameIsRunning(() => {
             if(pathColorChanged) {
                 return;
             }

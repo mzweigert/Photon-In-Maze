@@ -14,12 +14,11 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
     }
 
-    public override LinkedList<MazeCell> GenerateMaze() {
-        LinkedList<MazeCell> path = VisitCell(GetMazeCell(0, 0), Direction.Start);
-        return path;
+    protected override void GenerateMaze() {
+        VisitCell(GetMazeCell(0, 0), Direction.Start);
     }
 
-    private LinkedList<MazeCell> VisitCell(MazeCell current, Direction moveMade) {
+    private void VisitCell(MazeCell current, Direction moveMade) {
         LinkedList<MazeCell> pathToGoal = new LinkedList<MazeCell>();
         List<Direction> movesAvailable;
         HashSet<MazeCell> visitedCells = new HashSet<MazeCell>();
@@ -72,24 +71,13 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
             current.IsVisited = true;
             if(movesAvailable.Count > 0) {
-                FindNextToVisit(movesAvailable, current.Row, current.Column).IfPresent((ctv) => {
+                finder.FindNextToVisit(movesAvailable, current.Row, current.Column).IfPresent((ctv) => {
                     MazeCell next = GetMazeCell(ctv.Row, ctv.Column);
-                    visitedCells.Add(next);
-                    LinkedList<MazeCell> pathInNext = VisitCell(next, ctv.MoveMade);
-                    if(pathInNext.Count > 0) {
-                        pathToGoal = pathInNext;
-                    }
+                    VisitCell(next, ctv.MoveMade);
                 });
-            } else if(current.IsNotExitCell(RowCount, ColumnCount) && IsATrap(visitedCells, current)) {
-                current.IsTrap = true;
-            } else if(current.IsExitCell(RowCount, ColumnCount) || IsPathToGoalVisited(visitedCells)) {
-                pathToGoal.AddFirst(current);
-                current.IsPathToGoal = true;
-            }
+            } 
 
         } while(movesAvailable.Count > 0);
-
-        return pathToGoal;
     }
 
 }

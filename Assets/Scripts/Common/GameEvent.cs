@@ -44,7 +44,7 @@ public class GameEvent {
         IsGameRunning = true;
     }
 
-    public void CheckIfGameRunningAndCallUpdate(Action action) {
+    public void CallUpdateWhenGameIsRunning(Action action) {
         if(IsGameRunning) {
             action.Invoke();
         }
