@@ -134,25 +134,25 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
             case Movement.Left:
                 if(!lastSaved.WallBack) {
                     mazeScript.GetMazeCell(lastSaved.Row - 1, lastSaved.Column)
-                          .ForValuePresented(newCell => UpdateCellPosition(newCell));
+                          .IfPresent(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Right:
                 if(!lastSaved.WallFront) {
                     mazeScript.GetMazeCell(lastSaved.Row + 1, lastSaved.Column)
-                         .ForValuePresented(newCell => UpdateCellPosition(newCell));
+                         .IfPresent(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Up:
                 if(!lastSaved.WallLeft) {
                     mazeScript.GetMazeCell(lastSaved.Row, lastSaved.Column - 1)
-                         .ForValuePresented(newCell => UpdateCellPosition(newCell));
+                         .IfPresent(newCell => UpdateCellPosition(newCell));
                 }
                 break;
             case Movement.Down:
                 if(!lastSaved.WallRight) {
                     mazeScript.GetMazeCell(lastSaved.Row, lastSaved.Column + 1)
-                        .ForValuePresented(newCell => UpdateCellPosition(newCell));
+                        .IfPresent(newCell => UpdateCellPosition(newCell));
                 }
                 break;
         }

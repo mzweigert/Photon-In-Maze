@@ -6,8 +6,16 @@ using System.Collections.Generic;
 //<summary>
 //Game object, that creates maze and instantiates it in scene
 //</summary>
+
+public enum MazeGenerationAlgorithm {
+    PureRecursive,
+    RandomTree,
+}
+
 public class MazeController : MonoBehaviour {
 
+    [SerializeField]
+    private MazeGenerationAlgorithm Algorithm = MazeGenerationAlgorithm.PureRecursive;
     [SerializeField]
     private bool FullRandom = false;
     [SerializeField]
@@ -37,7 +45,7 @@ public class MazeController : MonoBehaviour {
             new Vector3(cell.Column * LenghtSide, 0, cell.Row * LenghtSide),
             Quaternion.Euler(0, 0, 0)) as GameObject;
         };
-        mMazeGenerator = new RecursiveMazeGenerator(Rows, Columns, createRealObject);
+        mMazeGenerator = GetGenerator(Rows, Columns, createRealObject);
         PathsToGoal = mMazeGenerator.GenerateMaze();
 		for (int row = 0; row < Rows; row++) {
 			for(int column = 0; column < Columns; column++){
@@ -78,6 +86,16 @@ public class MazeController : MonoBehaviour {
 			}
 		}*/
 	}
+
+    private BasicMazeGenerator GetGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObject) {
+        switch(Algorithm) {
+            case MazeGenerationAlgorithm.RandomTree:
+                return new RandomTreeMazeGenerator(Rows, Columns, createRealObject);
+            case MazeGenerationAlgorithm.PureRecursive:
+            default:
+                return new RecursiveMazeGenerator(Rows, Columns, createRealObject);
+        }
+    }
 
     void Update() {
         GameEvent.Instance.CheckIfGameRunningAndCallUpdate(() => {

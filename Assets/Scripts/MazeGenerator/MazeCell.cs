@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum Direction {
@@ -65,5 +66,36 @@ public class MazeCell {
     public int Column { get; }
     public int Row { get; }
 
+    internal List<Direction> GetPossibleMoveDirection() {
+        List<Direction> movesAvailable = new List<Direction>(4);
+        if(!WallRight) {
+            movesAvailable.Add(Direction.Right);
+        }
+        if(!WallFront) {
+            movesAvailable.Add(Direction.Front);
+        }
+        if(!WallLeft) {
+            movesAvailable.Add(Direction.Left);
+        }
+        if(!WallBack) {
+            movesAvailable.Add(Direction.Back);
+        }
+        return movesAvailable;
+    }
 
+    internal bool IsExitCell(int rowCount, int columnCount) {
+        return Column + 1 == columnCount && Row + 1 == rowCount;
+    }
+
+    internal bool IsStartCell() {
+        return Column == 0 && Row == 0;
+    }
+
+    internal bool IsNotExitCell(int rowCount, int columnCount) {
+        return !IsExitCell(rowCount, columnCount);
+    }
+
+    public override string ToString() {
+        return string.Format("[MazeCell {0} {1}]", Row, Column);
+    }
 }

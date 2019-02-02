@@ -329,12 +329,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dbd480039f60a344bdc0ff90b9d70b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Algorithm: 1
   FullRandom: 1
-  RandomSeed: 0
+  RandomSeed: 9999
   Floor: {fileID: 165842, guid: 8d3b36f175a633f429d7bda54c76550d, type: 3}
   Wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
-  Rows: 30
-  Columns: 15
+  Rows: 5
+  Columns: 5
 --- !u!1 &1210011196
 GameObject:
   m_ObjectHideFlags: 0

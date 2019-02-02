@@ -4,7 +4,7 @@ public class CameraController : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        ObjectsManager.Instance.GetMazeScript().ForValuePresented(mazeScript => {
+        ObjectsManager.Instance.GetMazeScript().IfPresent(mazeScript => {
             float x = 0f, y = 0f, z = 0f;
             x = (mazeScript.Columns * 2f) - (mazeScript.LenghtSide / 2);
             z = (mazeScript.Rows * 2f) - (mazeScript.LenghtSide / 2);

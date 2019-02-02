@@ -9,20 +9,20 @@ using UnityEngine;
 public class RecursiveMazeGenerator : BasicMazeGenerator {
 
     private bool isInRange = false;
-    private LinkedList<MazeCell> pathToGoal;
 
     public RecursiveMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) : base(rows, columns, createRealObjFunction) {
-        pathToGoal = new LinkedList<MazeCell>();
+
     }
 
     public override LinkedList<MazeCell> GenerateMaze() {
-        VisitCell(GetMazeCell(0, 0), Direction.Start);
-        return pathToGoal;
+        LinkedList<MazeCell> path = VisitCell(GetMazeCell(0, 0), Direction.Start);
+        return path;
     }
 
-    private void VisitCell(MazeCell current, Direction moveMade) {
+    private LinkedList<MazeCell> VisitCell(MazeCell current, Direction moveMade) {
+        LinkedList<MazeCell> pathToGoal = new LinkedList<MazeCell>();
         List<Direction> movesAvailable;
-        List<MazeCell> visitedCells = new List<MazeCell>();
+        HashSet<MazeCell> visitedCells = new HashSet<MazeCell>();
 
         do {
             movesAvailable = new List<Direction>(4);
@@ -37,16 +37,14 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
             //check move forward
             isInRange = current.Row + 1 < RowCount;
-            bool isExitCell = current.Column + 1 == ColumnCount && current.Row + 1 == RowCount;
             if(isInRange && !GetMazeCell(current.Row + 1, current.Column).IsVisited) {
                 movesAvailable.Add(Direction.Front);
-            } else if(!current.IsVisited && moveMade != Direction.Back && !isExitCell) {
+            } else if(!current.IsVisited && moveMade != Direction.Back && current.IsNotExitCell(RowCount, ColumnCount)) {
                 current.WallFront = true;
                 if(isInRange) {
                     GetMazeCell(current.Row + 1, current.Column).WallBack = true;
                 }
-            } else if(isExitCell) {
-                pathToGoal.AddLast(current);
+            } else if(current.IsExitCell(RowCount, ColumnCount)) {
                 current.IsGoal = true;
             }
 
@@ -74,53 +72,24 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
             current.IsVisited = true;
             if(movesAvailable.Count > 0) {
-                MakeMove(movesAvailable, current)
-                    .ForValuePresented(next => visitedCells.Add(next));
-            } else if(!isExitCell && IsATrap(visitedCells, current)) {
+                FindNextToVisit(movesAvailable, current.Row, current.Column).IfPresent((ctv) => {
+                    MazeCell next = GetMazeCell(ctv.Row, ctv.Column);
+                    visitedCells.Add(next);
+                    LinkedList<MazeCell> pathInNext = VisitCell(next, ctv.MoveMade);
+                    if(pathInNext.Count > 0) {
+                        pathToGoal = pathInNext;
+                    }
+                });
+            } else if(current.IsNotExitCell(RowCount, ColumnCount) && IsATrap(visitedCells, current)) {
                 current.IsTrap = true;
-            } else if(!isExitCell && visitedCells.Exists(cell => cell.IsPathToGoal || cell.IsGoal)) {
+            } else if(current.IsExitCell(RowCount, ColumnCount) || IsPathToGoalVisited(visitedCells)) {
                 pathToGoal.AddFirst(current);
                 current.IsPathToGoal = true;
             }
 
-
         } while(movesAvailable.Count > 0);
+
+        return pathToGoal;
     }
 
-    private Optional<MazeCell> MakeMove(List<Direction> movesAvailable, MazeCell current) {
-        int randomCell = UnityEngine.Random.Range(0, movesAvailable.Count);
-        MazeCell next = null;
-        switch(movesAvailable[randomCell]) {
-            case Direction.Start:
-                break;
-            case Direction.Right:
-                next = GetMazeCell(current.Row, current.Column + 1);
-                VisitCell(next, Direction.Right);
-                break;
-            case Direction.Front:
-                next = GetMazeCell(current.Row + 1, current.Column);
-                VisitCell(next, Direction.Front);
-                break;
-            case Direction.Left:
-                next = GetMazeCell(current.Row, current.Column - 1);
-                VisitCell(next, Direction.Left);
-                break;
-            case Direction.Back:
-                next = GetMazeCell(current.Row - 1, current.Column);
-                VisitCell(next, Direction.Back);
-                break;
-        }
-        return Optional<MazeCell>.OfNullable(next);
-    }
-
-    private bool IsATrap(List<MazeCell> visitedCells, MazeCell currentCell) {
-        if(currentCell.Row == 0 && currentCell.Column == 0) {
-            return false;
-        }
-        if(visitedCells.Count == 0) {
-            return true;
-        }
-
-        return visitedCells.TrueForAll(cell => cell.IsTrap);
-    }
 }

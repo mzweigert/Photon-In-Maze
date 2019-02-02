@@ -19,12 +19,11 @@ public  class Optional<T>{
 
     public bool HasValue => value != null;
 
-    public void ForValuePresented(Action<T> action) {
+    public void IfPresent(Action<T> action) {
         if(action != null && value != null) {
             action(value);
         }
     }
-
 
     public T Get() => value;
     public T OrElse(T other) => HasValue ? value : other;
