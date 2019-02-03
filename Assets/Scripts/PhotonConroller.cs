@@ -72,13 +72,13 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
         }
 
         GameEvent.Instance.CallUpdateWhenGameIsRunning(() => {
-            
+
             if(movementsToMake.Count > 0 && !actuallyMoving) {
                 currentCell = movementsToMake.Dequeue();
                 actuallyMoving = true;
                 ChangePositionInfoInPathToGoal(currentCell);
             } else if(actuallyMoving) {
-                Vector3 targetPosition 
+                Vector3 targetPosition
                         = new Vector3(currentCell.RealObjectPosition.x, transform.position.y, currentCell.RealObjectPosition.z);
                 transform.position = Vector3.Lerp(transform.position, targetPosition, PhotonSpeed);
                 if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
@@ -86,24 +86,54 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
                     actuallyMoving = false;
                 }
             }
-           
-            foreach(Touch touch in Input.touches) {
-                if(touch.phase == TouchPhase.Began) {
-                    fingerStart = touch.position;
-                    fingerEnd = touch.position;
-                }
-                if(touch.phase == TouchPhase.Moved && canSwipe) {
-                    fingerEnd = touch.position;
-                    Movement movementDirection = GetTouchMovementDirection();
-                    NextMove(movementDirection);
-                    fingerStart = touch.position;
-                    canSwipe = false;
-                }
-                if(touch.phase == TouchPhase.Ended) {
-                    canSwipe = true;
-                }
-            }
+
+#if UNITY_EDITOR
+            CheckButtonPress();
+#elif UNITY_ANDROID
+             foreach(Touch touch in Input.touches) {
+                    CheckTouch(touch);
+             }
+#endif
+
         });
+    }
+
+    private void CheckButtonPress() {
+        if(CheckIfAnyPressed(KeyCode.W, KeyCode.UpArrow)) {
+            NextMove(Movement.Up);
+        } else if(CheckIfAnyPressed(KeyCode.A, KeyCode.LeftArrow)) {
+            NextMove(Movement.Left);
+        } else if(CheckIfAnyPressed(KeyCode.S, KeyCode.DownArrow)) {
+            NextMove(Movement.Down);
+        } else if(CheckIfAnyPressed(KeyCode.D, KeyCode.RightArrow)) {
+            NextMove(Movement.Right);
+        }
+    }
+
+    private bool CheckIfAnyPressed(params KeyCode[] codes) {
+        foreach(KeyCode code in codes) {
+            if(Input.GetKeyDown(code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CheckTouch(Touch touch) {
+        if(touch.phase == TouchPhase.Began) {
+            fingerStart = touch.position;
+            fingerEnd = touch.position;
+        }
+        if(touch.phase == TouchPhase.Moved && canSwipe) {
+            fingerEnd = touch.position;
+            Movement movementDirection = GetTouchMovementDirection();
+            NextMove(movementDirection);
+            fingerStart = touch.position;
+            canSwipe = false;
+        }
+        if(touch.phase == TouchPhase.Ended) {
+            canSwipe = true;
+        }
     }
 
     private void ChangePositionInfoInPathToGoal(MazeCell currentCell) {
