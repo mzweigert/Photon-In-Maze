@@ -33,6 +33,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
 
     private Light photonLight;
     private bool photonLightAlreadySet;
+   
 
     // Start is called before the first frame update
     void Start() {
@@ -91,7 +92,6 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
                 }
                 if(touch.phase == TouchPhase.Moved && canSwipe) {
                     fingerEnd = touch.position;
-
                     Movement movementDirection = GetTouchMovementDirection();
                     NextMove(movementDirection);
                     fingerStart = touch.position;
@@ -105,10 +105,12 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
     }
 
     private void ChangePositionInfoInPathToGoal(MazeCell currentCell) {
-        if(currentCell.Equals(currentFromPathToGoal.Next.Value)) {
+        if(currentCell.IsGoal) {
+            print("Congratulations! You are finished maze!");
+        } else if(currentFromPathToGoal.Next != null && currentCell.Equals(currentFromPathToGoal.Next.Value)) {
             currentFromPathToGoal = currentFromPathToGoal.Next;
             photonInPathToGoalInfo.PositionInPathToGoal++;
-        } else if(currentCell.Equals(currentFromPathToGoal.Previous.Value)) {
+        } else if(currentFromPathToGoal.Previous != null && currentCell.Equals(currentFromPathToGoal.Previous.Value)) {
             currentFromPathToGoal = currentFromPathToGoal.Previous;
             photonInPathToGoalInfo.PositionInPathToGoal--;
         } else if(!currentCell.Equals(currentFromPathToGoal.Value)) {
@@ -138,7 +140,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
                 }
                 break;
             case Movement.Right:
-                if(!lastSaved.WallFront) {
+                if(!lastSaved.WallFront && !lastSaved.IsGoal) {
                     mazeScript.GetMazeCell(lastSaved.Row + 1, lastSaved.Column)
                          .IfPresent(newCell => UpdateCellPosition(newCell));
                 }

@@ -83,16 +83,8 @@ public class MazeCell {
         return movesAvailable;
     }
 
-    internal bool IsExitCell(int rowCount, int columnCount) {
-        return Column + 1 == columnCount && Row + 1 == rowCount;
-    }
-
     internal bool IsStartCell() {
         return Column == 0 && Row == 0;
-    }
-
-    internal bool IsNotExitCell(int rowCount, int columnCount) {
-        return !IsExitCell(rowCount, columnCount);
     }
 
     public override string ToString() {

@@ -38,14 +38,12 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
             isInRange = current.Row + 1 < RowCount;
             if(isInRange && !GetMazeCell(current.Row + 1, current.Column).IsVisited) {
                 movesAvailable.Add(Direction.Front);
-            } else if(!current.IsVisited && moveMade != Direction.Back && current.IsNotExitCell(RowCount, ColumnCount)) {
+            } else if(!current.IsVisited && moveMade != Direction.Back) {
                 current.WallFront = true;
                 if(isInRange) {
                     GetMazeCell(current.Row + 1, current.Column).WallBack = true;
                 }
-            } else if(current.IsExitCell(RowCount, ColumnCount)) {
-                current.IsGoal = true;
-            }
+            } 
 
             //check move left
             isInRange = current.Column - 1 >= 0;

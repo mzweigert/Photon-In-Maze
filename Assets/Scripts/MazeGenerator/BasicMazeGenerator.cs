@@ -71,7 +71,7 @@ public abstract class BasicMazeGenerator {
         List<Direction> movesAvailable = current.GetPossibleMoveDirection();
         if(moveMade != Direction.Start) {
             movesAvailable.Remove(GetOposedMove(moveMade));
-        } else if(current.IsExitCell(RowCount, ColumnCount)) {
+        } else if(current.IsGoal) {
             movesAvailable.Remove(Direction.Front);
         }
         HashSet<MazeCell> visitedCells = new HashSet<MazeCell>();
@@ -88,9 +88,9 @@ public abstract class BasicMazeGenerator {
             });
         }
 
-        if(current.IsExitCell(RowCount, ColumnCount) || current.IsStartCell() || finder.IsPathToGoalVisited(visitedCells)) {
+        if(current.IsGoal || current.IsStartCell() || finder.IsPathToGoalVisited(visitedCells)) {
             pathToGoal.AddLast(current);
-        } else if(current.IsNotExitCell(RowCount, ColumnCount) && finder.IsATrap(visitedCells, current)) {
+        } else if(!current.IsGoal && finder.IsATrap(visitedCells, current)) {
             current.IsTrap = true;
             current.IsPathToGoal = false;
         }
