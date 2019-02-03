@@ -34,6 +34,8 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
     private Light photonLight;
     private bool photonLightAlreadySet;
    
+    [Range(0.1f, 2f)]
+    public float PhotonSpeed;
 
     // Start is called before the first frame update
     void Start() {
@@ -78,7 +80,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonInPathToGoalInfo
             } else if(actuallyMoving) {
                 Vector3 targetPosition 
                         = new Vector3(currentCell.RealObjectPosition.x, transform.position.y, currentCell.RealObjectPosition.z);
-                transform.position = Vector3.Lerp(transform.position, targetPosition, 0.5f);
+                transform.position = Vector3.Lerp(transform.position, targetPosition, PhotonSpeed);
                 if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
                     transform.position = targetPosition;
                     actuallyMoving = false;
