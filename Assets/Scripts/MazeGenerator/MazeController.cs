@@ -26,9 +26,9 @@ public class MazeController : MonoBehaviour {
     [SerializeField]
     private GameObject Wall = null;
 	//public GameObject Pillar = null;
-    [Range(1, 60)]
+    [Range(1, 50)]
     public int Rows = 5;
-    [Range(1, 60)]
+    [Range(1, 50)]
     public int Columns = 5;
     public float LenghtSide { get { return 4f; } }
     public LinkedList<MazeCell> PathsToGoal { get; private set; }

@@ -363,7 +363,7 @@ MonoBehaviour:
   Floor: {fileID: 165842, guid: 8d3b36f175a633f429d7bda54c76550d, type: 3}
   Wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
   Rows: 60
-  Columns: 40
+  Columns: 60
 --- !u!1 &1210011196
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,10 +594,10 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!1 &1814763716 stripped
