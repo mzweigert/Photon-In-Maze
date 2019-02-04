@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> {
+public class LightController : MonoBehaviour, IObserver<PhotonState> {
 
     private Optional<MazeController> mazeController;
     private Optional<PhotonConroller> photonController;
@@ -17,9 +17,12 @@ public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> 
     private int pathToGoalCount;
     private int lastPathToGoalIndex;
     // Start is called before the first frame update
-    void Start() {
+    void Awake() {
         mazeController = ObjectsManager.Instance.GetMazeScript();
         photonController = ObjectsManager.Instance.GetPhotonScript();
+    }
+
+    void Start() {
         if(!mazeController.HasValue || !photonController.HasValue) {
             Debug.LogError("MazeController or PhontonController not preset!");
             return;
@@ -70,7 +73,7 @@ public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> 
         Debug.LogError(error.Message);
     }
 
-    public void OnNext(PhotonInPathToGoalInfo value) {
+    public void OnNext(PhotonState value) {
         if(value.PositionInPathToGoal != lastPathToGoalIndex) {
             lastPathToGoalIndex = value.PositionInPathToGoal;
             float delta = onePercentLightInensity * (((float)lastPathToGoalIndex / pathToGoalCount) * 100f);

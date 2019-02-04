@@ -41,10 +41,12 @@ public class MazeController : MonoBehaviour {
             UnityEngine.Random.InitState(RandomSeed);
 		}
         Func<MazeCell, GameObject> createRealObject = (MazeCell cell) => {
-            return Instantiate(
+            GameObject floor = Instantiate(
             Floor,
             new Vector3(cell.Column * LenghtSide, 0, cell.Row * LenghtSide),
-            Quaternion.Euler(0, 0, 0)) as GameObject;
+            Quaternion.Euler(0, 0, 0));
+            floor.name = "Floor";
+            return floor;
         };
         mMazeGenerator = GetGenerator(Rows, Columns, createRealObject);
         PathsToGoal = mMazeGenerator.GenerateMazeAndFindPathToGoal();
@@ -54,27 +56,35 @@ public class MazeController : MonoBehaviour {
 				float z = row * LenghtSide;
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
 				GameObject tmp = cell.RealObject;
-				tmp.transform.parent = transform;
+                GameObject cellGameObject = new GameObject();
+                cellGameObject.name = cell.ToStringAsName();
+                cellGameObject.transform.parent = transform;
+                tmp.transform.parent = cellGameObject.transform;
                 if(cell.IsPathToGoal || cell.IsGoal) {
                     tmp.GetComponent<Renderer>().material.color = Colors.Navy;
                 }
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+ LenghtSide / 2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
-					tmp.transform.parent = transform;
-				}
+                    tmp.name = "WallRight";
+                    tmp.transform.parent = cellGameObject.transform;
+                }
 				if(cell.WallFront){
 					tmp = Instantiate(Wall,new Vector3(x,0,z+ LenghtSide / 2)+Wall.transform.position,Quaternion.Euler(0,0,0)) as GameObject;// front
-					tmp.transform.parent = transform;
-				}
+                    tmp.name = "WallFront";
+                    tmp.transform.parent = cellGameObject.transform;
+                }
 				if(cell.WallLeft){
 					tmp = Instantiate(Wall,new Vector3(x- LenghtSide / 2,0,z)+Wall.transform.position,Quaternion.Euler(0,270,0)) as GameObject;// left
-					tmp.transform.parent = transform;
-				}
+                    tmp.name = "WallLeft";
+                    tmp.transform.parent = cellGameObject.transform;
+                }
 				if(cell.WallBack){
 					tmp = Instantiate(Wall,new Vector3(x,0,z- LenghtSide / 2)+Wall.transform.position,Quaternion.Euler(0,180,0)) as GameObject;// back
-					tmp.transform.parent = transform;
-				}
-			}
+                    tmp.name = "WallBack";
+                    tmp.transform.parent = cellGameObject.transform;
+                }
+                
+            }
 		}
         /*if(Pillar != null){
 			for (int row = 0; row < Rows+1; row++) {

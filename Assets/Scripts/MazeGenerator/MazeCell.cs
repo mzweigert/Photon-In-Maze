@@ -90,4 +90,8 @@ public class MazeCell {
     public override string ToString() {
         return string.Format("[MazeCell {0} {1}]", Row, Column);
     }
+
+    public string ToStringAsName() {
+        return string.Format("MazeCell_{0}_{1}", Row, Column);
+    }
 }

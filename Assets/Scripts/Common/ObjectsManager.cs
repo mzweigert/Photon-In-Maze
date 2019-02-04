@@ -7,7 +7,10 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
     private ObjectsManager() { }
 
     [SerializeField]
-    private new Camera camera;
+    private new Camera areaCamera;
+
+    [SerializeField]
+    private new Camera photonCamera;
 
     [SerializeField]
     private Light directionalLight;
@@ -21,9 +24,15 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
     [SerializeField]
     private Canvas canvas;
 
-    public Camera GetCamera() {
-        LogIfObjectIsNull(camera, "Camera");
-        return camera;
+    public Camera GetAreaCamera() {
+        LogIfObjectIsNull(areaCamera, "AreaCamera");
+        return areaCamera;
+    }
+
+
+    public Camera GetPhotonCamera() {
+        LogIfObjectIsNull(photonCamera, "PhotonCamera");
+        return photonCamera;
     }
 
     public Optional<CameraController> GetCameraScriptt() {

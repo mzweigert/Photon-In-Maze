@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Floor
   - Coin
+  - Sound
+  - PhotonCamera
   layers:
   - Default
   - TransparentFX
