@@ -26,20 +26,20 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
     private Optional<MazeController> mazeController;
 
     private Vector2 fingerStart, fingerEnd;
-    private bool canSwipe;
-    private bool actuallyMoving;
+    private bool canSwipe = true;
+    private bool actuallyMoving = false;
 
     private float minDistanceToNextMove = 0.1f;
     private MazeCell currentCell, lastSaved;
     private LinkedListNode<MazeCell> currentFromPathToGoal;
-    private Queue<MazeCell> movementsToMake;
+    private Queue<MazeCell> movementsToMake = new Queue<MazeCell>();
 
-    private List<IObserver<PhotonState>> observers;
+    private List<IObserver<PhotonState>> observers = new List<IObserver<PhotonState>>();
     private PhotonState photonState;
 
     private Light photonLight;
     private bool photonLightAlreadySet;
-   
+
     [Range(0.1f, 2f)]
     public float PhotonSpeed;
 
@@ -50,15 +50,11 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
             Debug.LogError("MazeController not preset!");
             return;
         }
-        observers = new List<IObserver<PhotonState>>();
-        movementsToMake = new Queue<MazeCell>();
-        canSwipe = true;
-        actuallyMoving = false;
         photonState = new PhotonState(true, 0, transform.position);
         currentFromPathToGoal = mazeController.Get()
             .PathsToGoal
             .First;
-        currentCell = currentFromPathToGoal == null? mazeController.Get().GetMazeCell(0, 0).Get() : currentFromPathToGoal.Value;
+        currentCell = currentFromPathToGoal == null ? mazeController.Get().GetMazeCell(0, 0).Get() : currentFromPathToGoal.Value;
         lastSaved = currentCell;
         photonLight = GetComponentInChildren<Light>();
         photonLight.intensity = 0f;
@@ -90,8 +86,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
                 actuallyMoving = true;
                 ChangePositionInfoInPathToGoal(currentCell);
             } else if(actuallyMoving) {
-                Vector3 targetPosition
-                        = new Vector3(currentCell.RealObjectPosition.x, transform.position.y, currentCell.RealObjectPosition.z);
+                Vector3 targetPosition = new Vector3(currentCell.X, transform.position.y, currentCell.Y);
                 transform.position = Vector3.Lerp(transform.position, targetPosition, PhotonSpeed);
                 if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
                     transform.position = targetPosition;
@@ -101,10 +96,10 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
                 observers.ForEach((observer) => observer.OnNext(photonState));
             }
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             CheckButtonPress();
-            #endif
-            CheckTouches();
+#endif
+            CheckTouch();
 
         });
     }
@@ -130,8 +125,9 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
         return false;
     }
 
-    private void CheckTouches() {
-        foreach(Touch touch in Input.touches) {
+    private void CheckTouch() {
+        if(Input.touchCount == 1) {
+            Touch touch = Input.GetTouch(0);
             if(touch.phase == TouchPhase.Began) {
                 fingerStart = touch.position;
                 fingerEnd = touch.position;
@@ -174,7 +170,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
     private void NextMove(Movement movementDirection) {
         if(!mazeController.HasValue) {
             return;
-        } 
+        }
 
         switch(movementDirection) {
             case Movement.Left:

@@ -77,7 +77,7 @@ public class LightController : MonoBehaviour, IObserver<PhotonState> {
         if(value.PositionInPathToGoal != lastPathToGoalIndex) {
             lastPathToGoalIndex = value.PositionInPathToGoal;
             float delta = onePercentLightInensity * (((float)lastPathToGoalIndex / pathToGoalCount) * 100f);
-            light.intensity = minLightIntensity + (delta * 0.05f);
+            light.intensity = minLightIntensity + (delta * 0.1f);
         }
     }
 }

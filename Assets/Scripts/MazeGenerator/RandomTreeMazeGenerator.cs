@@ -9,8 +9,7 @@ public class RandomTreeMazeGenerator : BasicMazeGenerator {
 
     CellsToVisit cellsToVisit;
 
-    public RandomTreeMazeGenerator(int rows, int columns, System.Func<MazeCell, GameObject> createRealObjFunction)
-        : base(rows, columns, createRealObjFunction) {
+    public RandomTreeMazeGenerator(int rows, int columns, float cellLengthSide) : base(rows, columns, cellLengthSide) {
         cellsToVisit = new CellsToVisit();
     }
 

@@ -15,10 +15,11 @@ public enum Direction {
 //</summary>
 public class MazeCell {
 
-    public MazeCell(int row, int column, Func<MazeCell, GameObject> createRealObjFunction) {
+    public MazeCell(int row, int column, float cellLengthSide) {
         this.Row = row;
         this.Column = column;
-        this.RealObject = createRealObjFunction.Invoke(this);
+        this.X = column * cellLengthSide;
+        this.Y = row * cellLengthSide;
     }
 
     public void SetWall(Direction direction) {
@@ -61,10 +62,10 @@ public class MazeCell {
     public bool IsGoal { get; set; } = false;
     public bool IsTrap { get; set; } = false;
 
-    public GameObject RealObject { get; private set; }
-    public Vector3 RealObjectPosition { get { return RealObject != null ? RealObject.transform.position : Vector3.zero; } }
     public int Column { get; }
     public int Row { get; }
+    public float X { get; }
+    public float Y { get; }
 
     internal List<Direction> GetPossibleMoveDirection() {
         List<Direction> movesAvailable = new List<Direction>(4);
