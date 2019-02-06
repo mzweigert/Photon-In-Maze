@@ -7,8 +7,7 @@ using UnityEngine;
 //</summary>
 public class DivisionMazeGenerator : BasicMazeGenerator {
 
-    public DivisionMazeGenerator(int row, int column, System.Func<MazeCell, GameObject> createRealObjFunction) : 
-        base(row, column, createRealObjFunction) {
+    public DivisionMazeGenerator(int row, int column, float cellLengthSide) : base(row, column, cellLengthSide) {
 
     }
 

@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ObjectsManager : SceneSingleton<ObjectsManager> {
 
     private ObjectsManager() { }
 
     [SerializeField]
-    private new Camera camera;
+    private new Camera areaCamera;
 
     [SerializeField]
     private Light directionalLight;
@@ -21,9 +19,9 @@ public class ObjectsManager : SceneSingleton<ObjectsManager> {
     [SerializeField]
     private Canvas canvas;
 
-    public Camera GetCamera() {
-        LogIfObjectIsNull(camera, "Camera");
-        return camera;
+    public Camera GetAreaCamera() {
+        LogIfObjectIsNull(areaCamera, "AreaCamera");
+        return areaCamera;
     }
 
     public Optional<CameraController> GetCameraScriptt() {

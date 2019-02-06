@@ -23,8 +23,8 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
-  m_AmbientMode: 3
+  m_AmbientIntensity: 0
+  m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -253,7 +253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: orthographic
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: orthographic size
@@ -282,6 +282,14 @@ PrefabInstance:
     - target: {fileID: 2099578, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
       propertyPath: m_BackGroundColor.b
       value: 0.764151
+      objectReference: {fileID: 0}
+    - target: {fileID: 126140, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
+      propertyPath: m_Name
+      value: Area Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 126140, guid: 3549f273ff63f754eb749081e517a9fa, type: 2}
+      propertyPath: m_TagString
+      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
@@ -334,8 +342,8 @@ MonoBehaviour:
   RandomSeed: 9
   Floor: {fileID: 165842, guid: 8d3b36f175a633f429d7bda54c76550d, type: 3}
   Wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
-  Rows: 30
-  Columns: 15
+  Rows: 50
+  Columns: 35
 --- !u!1 &1210011196
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b506809788d694ca52196cb98fce94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 1346720326}
+  areaCamera: {fileID: 1346720326}
   directionalLight: {fileID: 2144415892}
   maze: {fileID: 949568338}
   photon: {fileID: 1814763716}
@@ -400,8 +408,8 @@ GameObject:
   - component: {fileID: 1346720323}
   - component: {fileID: 1346720328}
   m_Layer: 0
-  m_Name: Camera
-  m_TagString: Untagged
+  m_Name: Area Camera
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -459,7 +467,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 50
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 28.64
   m_Depth: 0
   m_CullingMask:
@@ -669,8 +677,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 7.5
-  m_Range: 10
+  m_Intensity: 10
+  m_Range: 15
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:

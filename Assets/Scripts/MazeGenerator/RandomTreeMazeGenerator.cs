@@ -7,11 +7,10 @@ using System.Collections.Generic;
 //</summary>
 public class RandomTreeMazeGenerator : BasicMazeGenerator {
 
-    CellsToVisit cellsToVisit;
+    CellsToVisit cellsToVisit = new CellsToVisit();
 
-    public RandomTreeMazeGenerator(int rows, int columns, System.Func<MazeCell, GameObject> createRealObjFunction)
-        : base(rows, columns, createRealObjFunction) {
-        cellsToVisit = new CellsToVisit();
+    public RandomTreeMazeGenerator(int rows, int columns, float cellLengthSide) : base(rows, columns, cellLengthSide) {
+
     }
 
     protected override void GenerateMaze() {

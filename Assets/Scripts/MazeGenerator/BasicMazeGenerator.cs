@@ -12,8 +12,10 @@ public abstract class BasicMazeGenerator {
     protected MazeCellFinder finder;
 
     private MazeCell[,] mMaze;
+    private int row;
+    private int column;
 
-	public BasicMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) {
+    public BasicMazeGenerator(int rows, int columns, float cellLengthSide) {
         RowCount = Mathf.Abs(rows);
 		ColumnCount = Mathf.Abs(columns);
 		if (RowCount == 0) {
@@ -25,13 +27,18 @@ public abstract class BasicMazeGenerator {
 		mMaze = new MazeCell[rows,columns];
 		for (int row = 0; row < rows; row++) {
 			for(int column = 0; column < columns; column++){
-                MazeCell cell = new MazeCell(row, column, createRealObjFunction);
+                MazeCell cell = new MazeCell(row, column, cellLengthSide);
                 mMaze[row, column] = cell;
             }
 		}
         finder = new MazeCellFinder(RowCount, ColumnCount);
 
 
+    }
+
+    protected BasicMazeGenerator(int row, int column) {
+        this.row = row;
+        this.column = column;
     }
 
     public MazeCell GetMazeCell(int row, int column) {

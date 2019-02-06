@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> {
+public class LightController : MonoBehaviour, IObserver<PhotonState> {
 
-    private Optional<MazeController> mazeController;
-    private Optional<PhotonConroller> photonController;
+    private Optional<MazeController> mazeController = Optional<MazeController>.Empty();
+    private Optional<PhotonConroller> photonController = Optional<PhotonConroller>.Empty();
     private new Light light;
     private bool lightConfigured = false;
     private bool audioPlayed = false;
@@ -16,6 +16,7 @@ public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> 
 
     private int pathToGoalCount;
     private int lastPathToGoalIndex;
+
     // Start is called before the first frame update
     void Start() {
         mazeController = ObjectsManager.Instance.GetMazeScript();
@@ -70,11 +71,11 @@ public class LightController : MonoBehaviour, IObserver<PhotonInPathToGoalInfo> 
         Debug.LogError(error.Message);
     }
 
-    public void OnNext(PhotonInPathToGoalInfo value) {
+    public void OnNext(PhotonState value) {
         if(value.PositionInPathToGoal != lastPathToGoalIndex) {
             lastPathToGoalIndex = value.PositionInPathToGoal;
             float delta = onePercentLightInensity * (((float)lastPathToGoalIndex / pathToGoalCount) * 100f);
-            light.intensity = minLightIntensity + (delta * 0.05f);
+            light.intensity = minLightIntensity + (delta * 0.1f);
         }
     }
 }

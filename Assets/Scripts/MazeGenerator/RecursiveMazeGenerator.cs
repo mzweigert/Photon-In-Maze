@@ -10,7 +10,7 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
     private bool isInRange = false;
 
-    public RecursiveMazeGenerator(int rows, int columns, Func<MazeCell, GameObject> createRealObjFunction) : base(rows, columns, createRealObjFunction) {
+    public RecursiveMazeGenerator(int rows, int columns, float cellLengthSide) : base(rows, columns, cellLengthSide) {
 
     }
 

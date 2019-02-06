@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour {
 
             GameObject maze = ObjectsManager.Instance.GetMaze();
 
-            Camera camera = ObjectsManager.Instance.GetCamera();
+            Camera camera = ObjectsManager.Instance.GetAreaCamera();
             if(camera.orthographic) {
                 float sizeForLongerColumnsLength = mazeScript.Columns * 2.05f;
                 float sizeForLongerRowsLength = mazeScript.Rows * 1.25f;

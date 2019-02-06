@@ -40,7 +40,8 @@ QualitySettings:
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    excludedTargetPlatforms: []
+    excludedTargetPlatforms:
+    - Android
   - serializedVersion: 2
     name: Low
     pixelLightCount: 0
@@ -150,7 +151,7 @@ QualitySettings:
     name: Very High
     pixelLightCount: 3
     shadows: 2
-    shadowResolution: 2
+    shadowResolution: 1
     shadowProjection: 1
     shadowCascades: 2
     shadowDistance: 40
@@ -158,17 +159,17 @@ QualitySettings:
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
     shadowmaskMode: 1
-    blendWeights: 4
-    textureQuality: 0
+    blendWeights: 2
+    textureQuality: 1
     anisotropicTextures: 1
-    antiAliasing: 4
+    antiAliasing: 0
     softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
-    vSyncCount: 1
-    lodBias: 1.5
-    maximumLODLevel: 0
+    vSyncCount: 0
+    lodBias: 0.5
+    maximumLODLevel: 4
     streamingMipmapsActive: 0
     streamingMipmapsAddAllCameras: 1
     streamingMipmapsMemoryBudget: 512
@@ -216,4 +217,6 @@ QualitySettings:
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
     excludedTargetPlatforms: []
-  m_PerPlatformDefaultQuality: {}
+  m_PerPlatformDefaultQuality:
+    Android: 2
+    Standalone: 0

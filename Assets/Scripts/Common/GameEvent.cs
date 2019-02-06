@@ -21,8 +21,6 @@ public class GameEvent {
         }
     }
 
-    
-
     public void TryTurnOffLight() {
         if(CanTurnOffLight || IsLightTurnedOff) {
             throw new InvalidOperationException("Light already turned off!");
