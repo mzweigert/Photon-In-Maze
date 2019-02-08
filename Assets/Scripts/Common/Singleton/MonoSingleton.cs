@@ -1,7 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class SceneSingleton<T> : MonoBehaviour where T : UnityEngine.Object {
+public abstract class MonoSingleton<T> : MonoBehaviour, System.IDisposable where T : Object {
     private static T _instance;
 
     public static T Instance {
@@ -11,5 +10,9 @@ public class SceneSingleton<T> : MonoBehaviour where T : UnityEngine.Object {
             }
             return _instance;
         }
+    }
+
+    public void Dispose() {
+        Destroy(_instance);
     }
 }

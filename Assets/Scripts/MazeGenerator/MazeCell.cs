@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,14 +52,33 @@ public class MazeCell {
         return hashCode;
     }
 
-    public bool IsVisited { get; set; } = false;
-    public bool WallRight { get; set; } = false;
-    public bool WallFront { get; set; } = false;
-    public bool WallLeft { get; set; } = false;
-    public bool WallBack { get; set; } = false;
-    public bool IsPathToGoal { get; set; } = false;
-    public bool IsGoal { get; set; } = false;
-    public bool IsTrap { get; set; } = false;
+    internal Direction GetDirectionTo(MazeCell next) {
+        if(next == null) {
+            return Direction.Start;
+        } else if(Row < next.Row) {
+            return Direction.Right;
+        } else if(Row > next.Row) {
+            return Direction.Left;
+        } else if(Column < next.Column) {
+            return Direction.Back;
+        } else if(Column > next.Column) {
+            return Direction.Front;
+        }
+        return Direction.Start;
+    }
+
+    public Vector2 ToVector2() {
+        return new Vector2(X, Y);
+    }
+
+    public bool IsVisited { get; internal set; } = false;
+    public bool WallRight { get; internal set; } = false;
+    public bool WallFront { get; internal set; } = false;
+    public bool WallLeft { get; internal set; } = false;
+    public bool WallBack { get; internal set; } = false;
+    public bool IsPathToGoal { get; internal set; } = false;
+    public bool IsGoal { get; internal set; } = false;
+    public bool IsTrap { get; internal set; } = false;
 
     public int Column { get; }
     public int Row { get; }

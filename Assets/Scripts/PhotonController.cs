@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public struct PhotonState {
     public bool IsInPathToGoal { get; internal set; }
-    public int PositionInPathToGoal { get; internal set; }
+    public bool IsRealPositionReached { get; internal set; }
+    public int IndexOfLastCellInPathToGoal { get; internal set; }
     public Vector3 RealPosition { get; internal set; }
 
-    public PhotonState(bool isInPathToGoal, int positionInPathToGoal, Vector3 realPosition) : this() {
-        IsInPathToGoal = isInPathToGoal;
-        PositionInPathToGoal = positionInPathToGoal;
+    public PhotonState(Vector3 realPosition) {
+        IsInPathToGoal = true;
+        IndexOfLastCellInPathToGoal = 0;
         RealPosition = realPosition;
+        IsRealPositionReached = true;
     }
 }
 
@@ -21,18 +24,19 @@ public enum Movement {
     Down
 };
 
-public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
+public class PhotonController : MonoObserveable<PhotonState> {
 
     private Optional<MazeController> mazeController = Optional<MazeController>.Empty();
 
     private Vector2 fingerStart, fingerEnd;
     private bool canSwipe = true;
-    private bool actuallyMoving = false;
 
-    private float minDistanceToNextMove = 0.1f;
-    private MazeCell currentCell, lastSaved;
-    private LinkedListNode<MazeCell> currentFromPathToGoal;
+    public LinkedListNode<MazeCell> LastNodeCellFromPathToGoal { get; private set; }
+    public MazeCell CurrentMazeCell { get; private set; }
+
+    private MazeCell lastSaved;
     private Queue<MazeCell> movementsToMake = new Queue<MazeCell>();
+    private readonly float minDistanceToNextMove = 0.1f;
 
     private List<IObserver<PhotonState>> observers = new List<IObserver<PhotonState>>();
     private PhotonState photonState;
@@ -50,12 +54,14 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
             Debug.LogError("MazeController not preset!");
             return;
         }
-        photonState = new PhotonState(true, 0, transform.position);
-        currentFromPathToGoal = mazeController.Get().PathsToGoal.First;
-        currentCell = currentFromPathToGoal.Value;
-        lastSaved = currentCell;
+        LastNodeCellFromPathToGoal = mazeController.Get().PathsToGoal.First;
+        CurrentMazeCell = LastNodeCellFromPathToGoal.Value;
+        lastSaved = CurrentMazeCell;
+        photonState = new PhotonState(transform.position);
+
         photonLight = GetComponentInChildren<Light>();
         photonLight.intensity = 0f;
+        observers.ForEach((observer) => observer.OnNext(photonState));
     }
 
     // Update is called once per frame
@@ -64,27 +70,27 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
         if(!mazeController.HasValue) {
             return;
         }
-        if(GameEvent.Instance.IsLightTurnedOff && photonLight && !photonLightAlreadySet) {
+        if(GameFlow.Instance.Is(GameFlow.State.LightTurnedOff) && photonLight && !photonLightAlreadySet) {
             photonLight.intensity = 7.5f;
             photonLightAlreadySet = true;
-            GameEvent.Instance.StartGame();
+            GameFlow.Instance.StartGame();
         }
 
-        GameEvent.Instance.CallUpdateWhenGameIsRunning(() => {
+        GameFlow.Instance.CallUpdateWhenGameIsRunning(() => {
 
-            if(movementsToMake.Count > 0 && !actuallyMoving) {
-                currentCell = movementsToMake.Dequeue();
-                actuallyMoving = true;
-                ChangePositionInfoInPathToGoal(currentCell);
-            } else if(actuallyMoving) {
-                Vector3 targetPosition = new Vector3(currentCell.X, transform.position.y, currentCell.Y);
+            if(movementsToMake.Count > 0 && photonState.IsRealPositionReached) {
+                CurrentMazeCell = movementsToMake.Dequeue();
+                photonState.IsRealPositionReached = false;
+                ChangePositionInfoInPathToGoal(CurrentMazeCell);
+            } else if(!photonState.IsRealPositionReached) {
+                Vector3 targetPosition = new Vector3(CurrentMazeCell.X, transform.position.y, CurrentMazeCell.Y);
                 transform.position = Vector3.Lerp(transform.position, targetPosition, PhotonSpeed);
                 if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
                     transform.position = targetPosition;
-                    actuallyMoving = false;
+                    photonState.IsRealPositionReached = true;
                 }
                 photonState.RealPosition = transform.position;
-                observers.ForEach((observer) => observer.OnNext(photonState));
+                NotifyObservers();
             }
 
 #if UNITY_EDITOR
@@ -119,6 +125,14 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
     private void CheckTouch() {
         if(Input.touchCount == 1) {
             Touch touch = Input.GetTouch(0);
+            if(EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {
+                canSwipe = false;
+                return;
+            } else if(ObjectsManager.Instance.IsArrowPresent()) {
+                canSwipe = true;
+                return;
+            }
+
             if(touch.phase == TouchPhase.Began) {
                 fingerStart = touch.position;
                 fingerEnd = touch.position;
@@ -137,17 +151,17 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
     }
 
     private void ChangePositionInfoInPathToGoal(MazeCell currentCell) {
-        if(currentFromPathToGoal == null) {
+        if(LastNodeCellFromPathToGoal == null) {
             photonState.IsInPathToGoal = false;
         } else if(currentCell.IsGoal) {
             print("Congratulations! You are finished maze!");
-        } else if(currentFromPathToGoal.Next != null && currentCell.Equals(currentFromPathToGoal.Next.Value)) {
-            currentFromPathToGoal = currentFromPathToGoal.Next;
-            photonState.PositionInPathToGoal++;
-        } else if(currentFromPathToGoal.Previous != null && currentCell.Equals(currentFromPathToGoal.Previous.Value)) {
-            currentFromPathToGoal = currentFromPathToGoal.Previous;
-            photonState.PositionInPathToGoal--;
-        } else if(!currentCell.Equals(currentFromPathToGoal.Value)) {
+        } else if(LastNodeCellFromPathToGoal.Next != null && currentCell.Equals(LastNodeCellFromPathToGoal.Next.Value)) {
+            LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Next;
+            photonState.IndexOfLastCellInPathToGoal++;
+        } else if(LastNodeCellFromPathToGoal.Previous != null && currentCell.Equals(LastNodeCellFromPathToGoal.Previous.Value)) {
+            LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Previous;
+            photonState.IndexOfLastCellInPathToGoal--;
+        } else if(!currentCell.Equals(LastNodeCellFromPathToGoal.Value)) {
             if(photonState.IsInPathToGoal) {
                 photonState.IsInPathToGoal = false;
             }
@@ -205,13 +219,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
         }
     }
 
-    public IDisposable Subscribe(IObserver<PhotonState> observer) {
-        if(!observers.Contains(observer)) {
-            observers.Add(observer);
-            // Provide observer with existing data.
-            observer.OnNext(photonState);
-        }
-        return new Unsubscriber<PhotonState>(observers, observer);
+    protected override PhotonState GetData() {
+        return photonState;
     }
-
 }

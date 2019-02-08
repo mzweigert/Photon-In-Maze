@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public class Optional<T> {
     private static readonly Optional<T> EMPTY = new Optional<T>();
@@ -15,13 +16,26 @@ public class Optional<T> {
     public static Optional<T> Empty() => EMPTY;
     public static Optional<T> Of(T arg) => new Optional<T>(arg);
     public static Optional<T> OfNullable(T arg) => arg != null ? Of(arg) : Empty();
+
+
     public static Optional<T> OfNullable(Func<T> outputArg) => outputArg != null ? Of(outputArg()) : Empty();
 
     public bool HasValue => value != null;
+    public bool HasNotValue => value == null;
 
     public void IfPresent(Action<T> action) {
         if(action != null && value != null) {
             action(value);
+        }
+    }
+
+    public void IfPresentOrElse(Action<T> actionIfpresent, Action actionElse) {
+        if(actionIfpresent == null || actionElse == null) {
+            throw new NullReferenceException();
+        } else if(value != null) {
+            actionIfpresent(value);
+        } else {
+            actionElse.Invoke();
         }
     }
 

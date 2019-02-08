@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class GameSingleton : MonoBehaviour {
+public abstract class GameSingleton : MonoBehaviour {
 
     private static bool created = false;
     void Awake() {

@@ -1,10 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-public class LightController : MonoBehaviour, IObserver<PhotonState> {
+public class LightController : MonoObserveable<PhotonController, PhotonState> {
 
     private Optional<MazeController> mazeController = Optional<MazeController>.Empty();
-    private Optional<PhotonConroller> photonController = Optional<PhotonConroller>.Empty();
     private new Light light;
     private bool lightConfigured = false;
     private bool audioPlayed = false;
@@ -20,8 +19,7 @@ public class LightController : MonoBehaviour, IObserver<PhotonState> {
     // Start is called before the first frame update
     void Start() {
         mazeController = ObjectsManager.Instance.GetMazeScript();
-        photonController = ObjectsManager.Instance.GetPhotonScript();
-        if(!mazeController.HasValue || !photonController.HasValue) {
+        if(!mazeController.HasValue) {
             Debug.LogError("MazeController or PhontonController not preset!");
             return;
         }
@@ -30,17 +28,12 @@ public class LightController : MonoBehaviour, IObserver<PhotonState> {
         onePercentLightInensity = (maxLightIntensity - minLightIntensity) / 100;
         light.intensity = maxLightIntensity;
         pathToGoalCount = mazeController.Get().PathsToGoal.Count;
-        photonController.Get().Subscribe(this);
     }
 
     // Update is called once per frame
     void Update() {
-        if(!mazeController.HasValue || !photonController.HasValue) {
-            Debug.LogError("MazeController or PhontonController not preset!");
-            return;
-        }
 
-        if(!GameEvent.Instance.CanTurnOffLight) {
+        if(!GameFlow.Instance.Is(GameFlow.State.CanTurnOffLight)) {
             return;
         }
 
@@ -59,21 +52,13 @@ public class LightController : MonoBehaviour, IObserver<PhotonState> {
         } else {
             light.intensity = minLightIntensity;
             lightConfigured = true;
-            GameEvent.Instance.LightTurnedOff();
+            GameFlow.Instance.TurnOffLight();
         }
     }
 
-    public void OnCompleted() {
-        throw new NotImplementedException();
-    }
-
-    public void OnError(Exception error) {
-        Debug.LogError(error.Message);
-    }
-
-    public void OnNext(PhotonState value) {
-        if(value.PositionInPathToGoal != lastPathToGoalIndex) {
-            lastPathToGoalIndex = value.PositionInPathToGoal;
+    public override void OnNext(PhotonState state) {
+        if(state.IndexOfLastCellInPathToGoal != lastPathToGoalIndex) {
+            lastPathToGoalIndex = state.IndexOfLastCellInPathToGoal;
             float delta = onePercentLightInensity * (((float)lastPathToGoalIndex / pathToGoalCount) * 100f);
             light.intensity = minLightIntensity + (delta * 0.1f);
         }

@@ -5,7 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Floor
-  - Coin
+  - Sound
   layers:
   - Default
   - TransparentFX
