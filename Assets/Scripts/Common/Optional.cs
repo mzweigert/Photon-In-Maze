@@ -1,8 +1,8 @@
 ﻿using System;
 
-public  class Optional<T>{
+public class Optional<T> {
     private static readonly Optional<T> EMPTY = new Optional<T>();
-    private readonly T value;
+    private T value;
 
     private Optional() => value = default;
     private Optional(T arg) {
@@ -28,6 +28,12 @@ public  class Optional<T>{
     public T Get() => value;
     public T OrElse(T other) => HasValue ? value : other;
     public T OrElseGet(Func<T> getOther) => HasValue ? value : getOther();
+    public T InitIfAbsentAndGet(Func<T> getOther) {
+        if(!HasValue) {
+            value = getOther();
+        }
+        return value;
+    }
     public T OrElseThrow<E>(Func<E> exceptionSupplier) where E : Exception => HasValue ? value : throw exceptionSupplier();
 
     public static explicit operator T(Optional<T> optional) => OfNullable((T)optional).Get();
@@ -41,4 +47,5 @@ public  class Optional<T>{
 
     public override int GetHashCode() => base.GetHashCode();
     public override string ToString() => HasValue ? $"Optional has <{value}>" : $"Optional has no any value: <{value}>";
+
 }

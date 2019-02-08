@@ -37,7 +37,7 @@ public class MazeController : MonoBehaviour {
 
     private BasicMazeGenerator mMazeGenerator = null;
 
-	void Start () {
+	void Awake () {
 		if (!FullRandom) {
             UnityEngine.Random.InitState(RandomSeed);
 		}

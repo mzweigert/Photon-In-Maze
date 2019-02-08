@@ -95,4 +95,5 @@ public class MazeCell {
     public string ToStringAsName() {
         return string.Format("MazeCell_{0}_{1}", Row, Column);
     }
+
 }
