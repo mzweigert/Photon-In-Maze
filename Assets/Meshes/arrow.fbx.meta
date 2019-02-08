@@ -1,24 +1,48 @@
 fileFormatVersion: 2
-guid: de815e9dc2d95a948939d83cfaa32a3d
+guid: 53d924bae0e06b74ebee33bffe08f033
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Box
+    100004: Box1
+    100006: arrow_model
+    100008: arrow_root
+    100010: bottom_light
+    100012: top_light
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Cube
+    400002: Box
+    400004: Box1
+    400006: arrow_model
+    400008: arrow_root
+    400010: bottom_light
+    400012: top_light
+    2100000: b0b0b0
+    2100002: arrow_material
+    2300000: Box
+    2300002: Box1
+    2300004: arrow_model
+    2300006: //RootNode
+    3300000: Box
+    3300002: Box1
+    3300004: arrow_model
+    3300006: //RootNode
+    4300000: Box
+    4300002: Box1
+    4300004: arrow_model
+    10800000: bottom_light
+    10800002: top_light
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: c93ba224b4cd4874d8cb2d5152e93a00, type: 2}
+      name: arrow_material
+    second: {fileID: 2100000, guid: edee5901c4f6c6346a6efd406fd96738, type: 2}
   materials:
     importMaterials: 0
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -48,7 +72,7 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
-    importVisibility: 0
+    importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
     importLights: 0
@@ -59,7 +83,7 @@ ModelImporter:
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
-    indexFormat: 1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -70,8 +94,8 @@ ModelImporter:
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
-    tangentImportMode: 4
-    normalCalculationMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
@@ -91,7 +115,7 @@ ModelImporter:
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
-    skeletonHasParents: 0
+    skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 0
   humanoidOversampling: 1

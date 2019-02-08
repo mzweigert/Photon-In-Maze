@@ -21,7 +21,7 @@ public class CountdownController : MonoBehaviour {
                 audioPlayed = true;
                 audioSource.Play();
             } else if(toStart < 0) {
-                GameEvent.Instance.TryTurnOffLight();
+                GameFlow.Instance.PrepareToTurnOffLight();
                 Destroy(gameObject);
             }
             elapsed = 0f;
