@@ -51,10 +51,8 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
             return;
         }
         photonState = new PhotonState(true, 0, transform.position);
-        currentFromPathToGoal = mazeController.Get()
-            .PathsToGoal
-            .First;
-        currentCell = currentFromPathToGoal == null ? mazeController.Get().GetMazeCell(0, 0).Get() : currentFromPathToGoal.Value;
+        currentFromPathToGoal = mazeController.Get().PathsToGoal.First;
+        currentCell = currentFromPathToGoal.Value;
         lastSaved = currentCell;
         photonLight = GetComponentInChildren<Light>();
         photonLight.intensity = 0f;
@@ -66,7 +64,7 @@ public class PhotonConroller : MonoBehaviour, IObservable<PhotonState> {
         if(!mazeController.HasValue) {
             return;
         }
-        if(GameEvent.Instance.IsLightTurnedOff && !photonLightAlreadySet) {
+        if(GameEvent.Instance.IsLightTurnedOff && photonLight && !photonLightAlreadySet) {
             photonLight.intensity = 7.5f;
             photonLightAlreadySet = true;
             GameEvent.Instance.StartGame();
