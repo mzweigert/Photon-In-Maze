@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public abstract class MonoObserveable<Controller, DataType> : MonoBehaviour, IObserver<DataType>
+public abstract class MonoObserver<Controller, DataType> : MonoBehaviour, IObserver<DataType>
     where Controller : MonoObserveable<DataType> {
 
     private IDisposable unsubscriber;

@@ -20,26 +20,22 @@ public class GameFlow {
     }
 
     public void PrepareToTurnOffLight() {
-        if(Is(State.Start)) {
-            CurrentState = State.CanTurnOffLight;
-        } else {
-            throw new InvalidOperationException(string.Format("Unsupported flow fro {0} to {1}", CurrentState, State.CanTurnOffLight));
-        }
+        TryChangeCurrentState(State.Start, State.CanTurnOffLight);
     }
 
     public void TurnOffLight() {
-        if(Is(State.CanTurnOffLight)) {
-            CurrentState = State.LightTurnedOff;
-        } else {
-            throw new InvalidOperationException(string.Format("Unsupported flow fro {0} to {1}", CurrentState, State.LightTurnedOff));
-        }
+        TryChangeCurrentState(State.CanTurnOffLight, State.LightTurnedOff);
     }
 
     public void StartGame() {
-        if(Is(State.LightTurnedOff)) {
-            CurrentState = State.GameRunning;
+        TryChangeCurrentState(State.LightTurnedOff, State.GameRunning);
+    }
+
+    private void TryChangeCurrentState(State expected, State next) {
+        if(Is(expected)) {
+            CurrentState = next;
         } else {
-            throw new InvalidOperationException(string.Format("Unsupported flow fro {0} to {1}", CurrentState, State.GameRunning));
+            throw new InvalidOperationException(string.Format("Unsupported flow from {0} to {1}", CurrentState, next));
         }
     }
 
