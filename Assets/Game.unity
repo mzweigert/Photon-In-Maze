@@ -661,7 +661,9 @@ MonoBehaviour:
   wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
   photon: {fileID: 335813630}
   arrow: {fileID: 2649734575190821100, guid: bfe871e96e6075042a20994701846427, type: 3}
-  blackHole: {fileID: 1542442851391621225, guid: abb07421195bc9b40ad8901f1ddd82ef,
+  blackHole: {fileID: 1542442851391621225, guid: 83149f6694816a044b0c53a0a475bd33,
+    type: 3}
+  whiteHole: {fileID: 1542442851391621225, guid: 13d7ade416853e04e844d1c0c196db12,
     type: 3}
   canvas: {fileID: 1893983970}
 --- !u!4 &1210011198

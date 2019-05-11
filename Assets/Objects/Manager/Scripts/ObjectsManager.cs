@@ -68,6 +68,8 @@ public class ObjectsManager : MonoSingleton<ObjectsManager> {
     [SerializeField]
     private GameObject blackHole = null;
 
+    [SerializeField]
+    private GameObject whiteHole = null;
 
     [SerializeField]
     private Canvas canvas = null;
@@ -142,6 +144,10 @@ public class ObjectsManager : MonoSingleton<ObjectsManager> {
         return blackHole;
     }
 
+    public GameObject GetWhiteHole() {
+        LogIfObjectIsNull(whiteHole, "WhiteHole");
+        return whiteHole;
+    }
 
     public Optional<Canvas> GetCanvas() {
         LogIfObjectIsNull(canvas, "Canvas");

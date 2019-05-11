@@ -36,6 +36,7 @@ public class MazeController : MonoBehaviour {
     private bool pathDestroyed = false;
     private GameObject wallPrototype, floorPrototype;
     private BasicMazeGenerator mMazeGenerator = null;
+    private bool holeGeneratorSwitch;
 
     void Awake() {
         if(!FullRandom) {
@@ -69,23 +70,30 @@ public class MazeController : MonoBehaviour {
                 cellGameObject.transform.parent = transform;
                 cellGameObject.transform.position = new Vector3(cell.X, area.transform.position.y, cell.Y);
                 GenerateWalls(cell, cellGameObject);
-                GenerateBlackHoles(cell, cellGameObject, ref i);
+                GenerateHoles(cell, cellGameObject, ref i);
 
             }
         }
     }
 
-    private void GenerateBlackHoles(MazeCell cell, GameObject cellGameObject, ref byte counter) {
+    private void GenerateHoles(MazeCell cell, GameObject cellGameObject, ref byte counter) {
         if(cell.Walls.Count < 3) {
             return;
         }
         counter++;
-        if(!cell.IsStartCell() && !cell.IsGoal && counter == 10) { 
-            GameObject blackHolePrototype = ObjectsManager.Instance.GetBlackHole();
-            GameObject blackHole = Instantiate(blackHolePrototype, cellGameObject.transform);
-            blackHole.name = string.Format("BlackHole_{0}_{1}", cell.Row, cell.Column);
+        if(!cell.IsStartCell() && !cell.IsGoal && counter == 10) {
+            if(holeGeneratorSwitch) {
+                GameObject blackHolePrototype = ObjectsManager.Instance.GetBlackHole();
+                GameObject blackHole = Instantiate(blackHolePrototype, cellGameObject.transform);
+                blackHole.name = string.Format("BlackHole_{0}_{1}", cell.Row, cell.Column);
+            } else {
+                GameObject whiteHolePrefab = ObjectsManager.Instance.GetWhiteHole();
+                GameObject whiteHole = Instantiate(whiteHolePrefab, cellGameObject.transform);
+                whiteHole.name = string.Format("WhiteHole_{0}_{1}", cell.Row, cell.Column);
+            }
+			holeGeneratorSwitch = !holeGeneratorSwitch;
             counter = 1;
-        }
+        }  
     }
 
     private GameObject CreateArea() {
