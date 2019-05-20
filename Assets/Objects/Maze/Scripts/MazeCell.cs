@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public enum Direction {
@@ -15,7 +14,7 @@ public enum Direction {
 //</summary>
 public class MazeCell {
 
-    public HashSet<Direction> Walls { get; internal set; } = new HashSet<Direction>(); 
+    public HashSet<Direction> Walls { get; internal set; } = new HashSet<Direction>();
     public bool IsVisited { get; internal set; } = false;
     public bool IsPathToGoal { get; internal set; } = false;
     public bool IsGoal { get; internal set; } = false;
@@ -66,15 +65,42 @@ public class MazeCell {
         return new Vector2(X, Y);
     }
 
-    internal HashSet<Direction> GetPossibleMoveDirection() {
+    internal HashSet<Direction> GetPossibleMovesDirection() {
         HashSet<Direction> availableMoves = new HashSet<Direction>();
-        System.Array allDirections = System.Enum.GetValues(typeof(Direction));
-        foreach(Direction direction in allDirections){
-            if(!Walls.Contains(direction) && direction != Direction.Start){
+        Array allDirections = System.Enum.GetValues(typeof(Direction));
+        foreach(Direction direction in allDirections) {
+            if(!Walls.Contains(direction) && direction != Direction.Start) {
                 availableMoves.Add(direction);
             }
         }
         return availableMoves;
+    }
+
+    internal HashSet<Vector2Int> GetPossibleMovesCoords() {
+        HashSet<Vector2Int> availableMoves = new HashSet<Vector2Int>();
+        Array allDirections = System.Enum.GetValues(typeof(Direction));
+        foreach(Direction direction in allDirections) {
+            if(Walls.Contains(direction) || direction == Direction.Start) {
+                continue;
+            }
+            Vector2Int move = MapDirectionToCoords(direction);
+            availableMoves.Add(move);
+        }
+        return availableMoves;
+    }
+
+    private Vector2Int MapDirectionToCoords(Direction direction) {
+        switch(direction) {
+            case Direction.Back:
+                return new Vector2Int(Row - 1, Column);
+            case Direction.Left:
+                return new Vector2Int(Row, Column - 1);
+            case Direction.Right:
+                return new Vector2Int(Row, Column + 1);
+            case Direction.Front:
+                return new Vector2Int(Row + 1, Column);
+        }
+        return new Vector2Int(Row, Column);
     }
 
     internal bool IsStartCell() {

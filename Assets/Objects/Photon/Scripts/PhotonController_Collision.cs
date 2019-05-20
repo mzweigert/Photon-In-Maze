@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public partial class PhotonController : MonoObserveable<PhotonState> {
@@ -20,9 +20,13 @@ public partial class PhotonController : MonoObserveable<PhotonState> {
             particleLightInstance.name = "ParticleLight";
             particleLightInstance.GetComponent<Target>().TargetVal = other.transform.parent.Find("_DarkOrb");
             blackHolesToLeakedLights.Add(GetKey(other), particleLightInstance);
-        } else if(other.name.Equals("_DestroyArea")) {
+        } else if(other.name.Equals("_TeleportArea")) {
             HandeOnTriggerExitBlackHole(GetKey(other));
-            photonLight.intensity *= 0.75f;
+            MazeCell target = mazeController.Wormholes[other.transform.parent.GetInstanceID()];
+            PushToQueueMoves(target.Row, target.Column, MovementEvent.Teleport);
+            Vector2Int nextMove = target.GetPossibleMovesCoords().First();
+            PushToQueueMoves(nextMove.x, nextMove.y, MovementEvent.Move);
+            PushToQueueMoves(nextMove.x, nextMove.y, MovementEvent.ExitFromWormhole);
         }
     }
 

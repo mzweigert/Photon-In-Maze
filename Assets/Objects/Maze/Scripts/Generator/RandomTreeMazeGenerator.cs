@@ -13,7 +13,7 @@ public class RandomTreeMazeGenerator : BasicMazeGenerator {
 
     }
 
-    protected override void GenerateMaze() {
+    public override void GenerateMaze() {
         bool isInRange = false;
         HashSet<Direction> movesAvailable;
         CellToVisit ctv = new CellToVisit(Random.Range(0, RowCount), Random.Range(0, ColumnCount), Direction.Start);

@@ -2,7 +2,7 @@
 
 public class LightController : MonoObserver<PhotonController, PhotonState> {
 
-    private Optional<MazeController> mazeController = Optional<MazeController>.Empty();
+    private MazeController mazeController;
     private new Light light;
     private bool lightConfigured = false;
     private bool audioPlayed = false;
@@ -17,16 +17,17 @@ public class LightController : MonoObserver<PhotonController, PhotonState> {
 
     // Start is called before the first frame update
     void Start() {
-        mazeController = ObjectsManager.Instance.GetMazeScript();
-        if(!mazeController.HasValue) {
-            Debug.LogError("MazeController or PhontonController not preset!");
+        Optional<MazeController> optionalMazeController = ObjectsManager.Instance.GetMazeScript();
+        if(optionalMazeController.HasNotValue) {
+            Debug.LogError("MazeController not preset!");
             return;
         }
+        mazeController = optionalMazeController.Get();
         audioSource = GetComponent<AudioSource>();
         light = GetComponent<Light>();
         onePercentLightInensity = (maxLightIntensity - minLightIntensity) / 100;
         light.intensity = maxLightIntensity;
-        pathToGoalCount = mazeController.Get().PathsToGoal.Count;
+        pathToGoalCount = mazeController.PathsToGoal.Count;
     }
 
     // Update is called once per frame

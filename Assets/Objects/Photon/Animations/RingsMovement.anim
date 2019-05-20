@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: photon
+  m_Name: RingsMovement
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -569,7 +569,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ring_1
+    path: Rings/ring_1
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -1125,7 +1125,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ring_2
+    path: Rings/ring_2
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -1681,7 +1681,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: ring_3
+    path: Rings/ring_3
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
@@ -1694,21 +1694,21 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2576745569
+      path: 1147013163
       attribute: 4
       script: {fileID: 0}
       typeID: 4
       customType: 4
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 10442203
+      path: 3713489297
       attribute: 4
       script: {fileID: 0}
       typeID: 4
       customType: 4
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2006476109
+      path: 2857396487
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -2292,7 +2292,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: ring_1
+    path: Rings/ring_1
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2311,7 +2311,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2870,7 +2870,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2889,7 +2889,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3448,7 +3448,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3467,7 +3467,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3486,7 +3486,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -3497,7 +3497,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3507,7 +3507,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3517,7 +3517,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: ring_2
+    path: Rings/ring_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3527,7 +3527,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3537,7 +3537,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3547,7 +3547,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: ring_3
+    path: Rings/ring_3
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MAT_BrightOrb
-  m_Shader: {fileID: 4800000, guid: 3a2f0365a6ef840408d53df5c2ce8ae9, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9eed06381452cc8419b789e8aa982769, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -69,7 +69,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FresnelIntensity: 1.5
-    - _FresnelPower: 1.46
+    - _FresnelPower: 2.55
     - _FresnelValue: 1
     - _GlossMapScale: 1
     - _Glossiness: 1
@@ -84,6 +84,6 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.4509804, g: 0.64705884, b: 1, a: 1}
+    - _Color: {r: 0.8490566, g: 0.8490566, b: 0.54901963, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

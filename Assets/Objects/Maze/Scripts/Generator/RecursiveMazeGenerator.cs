@@ -14,7 +14,7 @@ public class RecursiveMazeGenerator : BasicMazeGenerator {
 
     }
 
-    protected override void GenerateMaze() {
+    public override void GenerateMaze() {
         VisitCell(GetMazeCell(0, 0), Direction.Start);
     }
 

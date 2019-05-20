@@ -73,7 +73,7 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[0].blendWeights
+    propertyPath: m_QualitySettings.Array.data[0].skinWeights
     value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
@@ -178,7 +178,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].shadows
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].shadowResolution
@@ -186,7 +186,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].shadowProjection
-    value: 1
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].shadowCascades
@@ -221,12 +221,12 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[1].blendWeights
-    value: 2
+    propertyPath: m_QualitySettings.Array.data[1].skinWeights
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].textureQuality
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].anisotropicTextures
@@ -258,7 +258,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].lodBias
-    value: 0.4
+    value: 0.25
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[1].maximumLODLevel
@@ -365,7 +365,7 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[2].blendWeights
+    propertyPath: m_QualitySettings.Array.data[2].skinWeights
     value: 2
     objectReference: {fileID: 0}
   - target: {fileID: 0}
@@ -509,7 +509,7 @@ Preset:
     value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[3].blendWeights
+    propertyPath: m_QualitySettings.Array.data[3].skinWeights
     value: 2
     objectReference: {fileID: 0}
   - target: {fileID: 0}
@@ -653,8 +653,8 @@ Preset:
     value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[4].blendWeights
-    value: 2
+    propertyPath: m_QualitySettings.Array.data[4].skinWeights
+    value: 4
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[4].textureQuality
@@ -797,8 +797,8 @@ Preset:
     value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: m_QualitySettings.Array.data[5].blendWeights
-    value: 4
+    propertyPath: m_QualitySettings.Array.data[5].skinWeights
+    value: 255
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_QualitySettings.Array.data[5].textureQuality
@@ -898,7 +898,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PerPlatformDefaultQuality.Array.data[0].second
-    value: 2
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PerPlatformDefaultQuality.Array.data[1].first
@@ -906,5 +906,5 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PerPlatformDefaultQuality.Array.data[1].second
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
