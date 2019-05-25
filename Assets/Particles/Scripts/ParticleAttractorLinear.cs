@@ -13,6 +13,10 @@ public class ParticleAttractorLinear : Target {
         }
     }
     void Update() {
+        if(TargetVal == null) {
+            Destroy(gameObject);
+            return;
+        }
         particles = new ParticleSystem.Particle[ps.main.maxParticles];
         numParticlesAlive = ps.GetParticles(particles);
         float step = speed * Time.deltaTime * 0.5f;

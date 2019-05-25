@@ -25,7 +25,7 @@ public class ArrowButtonController : MonoBehaviour {
         text.text = ObjectsManager.Instance.ArrowHintsCount + "x";
         hidePosition = text.rectTransform.anchoredPosition;
 
-        showPosition = new Vector3(-125f, text.rectTransform.anchoredPosition.y);
+        showPosition = new Vector3(-150f, text.rectTransform.anchoredPosition.y);
         textColor = text.color;
     }
 
