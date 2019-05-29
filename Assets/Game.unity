@@ -694,7 +694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b506809788d694ca52196cb98fce94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _arrowHintsCount: 3
+  _arrowHintsCount: 5
   areaCamera: {fileID: 1346720326}
   directionalLight: {fileID: 2144415892}
   maze: {fileID: 949568338}

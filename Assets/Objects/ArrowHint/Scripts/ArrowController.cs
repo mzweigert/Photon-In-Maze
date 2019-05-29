@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ArrowState {
-    Init,
+    Creating,
     Checking,
     Moving,
     Rotating,
+    Destroying,
     Ending
 }
 
@@ -14,8 +15,9 @@ public class ArrowController : MonoObserveable<ArrowState> {
 
     private LinkedListNode<MazeCell> currentCell;
     private Direction lastMove = Direction.Start, nextMove;
-    private ArrowState currentState = ArrowState.Init;
+    private ArrowState currentState = ArrowState.Creating;
     private int sizeOfPath;
+    private Animator animator;
 
     private PhotonController photonScript;
     private MazeController mazeScript;
@@ -35,7 +37,7 @@ public class ArrowController : MonoObserveable<ArrowState> {
             sizeOfPath = (int)Math.Ceiling(currentCell.List.Count * 0.15f);
             NotifyCameraAboutResize(sizeOfPath);
             InitArrowPosition();
-            currentState = ArrowState.Moving;
+            animator = GetComponent<Animator>();
         } else {
             Debug.LogError("Cannot init start cell for arrow!");
         }
@@ -66,37 +68,62 @@ public class ArrowController : MonoObserveable<ArrowState> {
     }
     
     // Update is called once per frame
-    void Update() {
-        if(currentCell == null) {
-            Destroy(gameObject, 1.5f);
-        } else if(sizeOfPath == 0) {
-            Destroy(gameObject);
-        } else if(currentState == ArrowState.Checking) {
+    void FixedUpdate() {
 
-            nextMove = currentCell.Value.GetDirectionTo(currentCell.Next?.Value);
-            SetStateAndNotifyObservers(lastMove != nextMove ? ArrowState.Rotating : ArrowState.Moving);
-            currentCell = currentCell.Next;
-
-        } else if(currentState == ArrowState.Moving) {
-
-            Vector3 targetPosition = new Vector3(currentCell.Value.X, transform.position.y, currentCell.Value.Y);
-            transform.position = Vector3.Lerp(transform.position, targetPosition, 0.45f);
-            if(Vector3.Distance(transform.position, targetPosition) <= 0.1f) {
+        switch(currentState) {
+            case ArrowState.Creating:
+                if(IsStateInAnimatorHasEnded("OnCreate")) {
+                    currentState = ArrowState.Moving;
+                }
+                break;
+            case ArrowState.Checking:
+                nextMove = currentCell.Value.GetDirectionTo(currentCell.Next?.Value);
+                SetStateAndNotifyObservers(lastMove != nextMove ? ArrowState.Rotating : ArrowState.Moving);
+                currentCell = currentCell.Next;
+                PrepareToDestroy();
+                break;
+            case ArrowState.Moving:
+                Vector3 targetPosition = new Vector3(currentCell.Value.X, transform.position.y, currentCell.Value.Y);
+                transform.position = Vector3.Lerp(transform.position, targetPosition, 0.15f);
+                if(Vector3.Distance(transform.position, targetPosition) > 0.1f) {
+                    return;
+                }
                 transform.position = targetPosition;
                 SetStateAndNotifyObservers(ArrowState.Checking);
                 sizeOfPath--;
-            }
+                         PrepareToDestroy();
 
-        } else if(currentState == ArrowState.Rotating) {
-            Quaternion toRotation = GetRotationByMove(nextMove);
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, 0.35f);
-            bool rotationDone = Math.Abs(Math.Abs(transform.rotation.y) - Math.Abs(toRotation.y)) <= 0.1f;
-            if(rotationDone) {
-                transform.rotation = toRotation;
-                lastMove = nextMove;
-                SetStateAndNotifyObservers(ArrowState.Moving);
-            }
+                break;
+            case ArrowState.Rotating:
+                Quaternion toRotation = GetRotationByMove(nextMove);
+                transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, 0.35f);
+                bool rotationDone = Math.Abs(Math.Abs(transform.rotation.y) - Math.Abs(toRotation.y)) <= 0.1f;
+                if(rotationDone) {
+                    transform.rotation = toRotation;
+                    lastMove = nextMove;
+                    SetStateAndNotifyObservers(ArrowState.Moving);
+                }
+                break;
+            case ArrowState.Destroying:
+                if(IsStateInAnimatorHasEnded("OnDestroy")) {
+                    currentState = ArrowState.Ending;
+                    Destroy(gameObject);
+                }
+                break;
         }
+    }
+
+    private void PrepareToDestroy() {
+        if(currentCell == null || sizeOfPath == 0) {
+            currentState = ArrowState.Destroying;
+        } else if(currentCell.Next == null || sizeOfPath == 1) {
+            animator.SetTrigger("Destroy");
+        }  
+    }
+
+    bool IsStateInAnimatorHasEnded(string stateName) {
+        return animator.GetCurrentAnimatorStateInfo(0).IsName(stateName) && 
+            animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f;
     }
 
     private void OnDestroy() {

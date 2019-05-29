@@ -1,37 +1,95 @@
 fileFormatVersion: 2
 guid: 53d924bae0e06b74ebee33bffe08f033
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: Box
-    100004: Box1
-    100006: arrow_model
-    100008: arrow_root
-    100010: bottom_light
-    100012: top_light
-    400000: //RootNode
-    400002: Box
-    400004: Box1
-    400006: arrow_model
-    400008: arrow_root
-    400010: bottom_light
-    400012: top_light
-    2100000: b0b0b0
-    2100002: arrow_material
-    2300000: Box
-    2300002: Box1
-    2300004: arrow_model
-    2300006: //RootNode
-    3300000: Box
-    3300002: Box1
-    3300004: arrow_model
-    3300006: //RootNode
-    4300000: Box
-    4300002: Box1
-    4300004: arrow_model
-    10800000: bottom_light
-    10800002: top_light
+  serializedVersion: 25
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: Box
+  - first:
+      1: 100004
+    second: Box1
+  - first:
+      1: 100006
+    second: arrow_model
+  - first:
+      1: 100008
+    second: arrow_root
+  - first:
+      1: 100010
+    second: bottom_light
+  - first:
+      1: 100012
+    second: top_light
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: Box
+  - first:
+      4: 400004
+    second: Box1
+  - first:
+      4: 400006
+    second: arrow_model
+  - first:
+      4: 400008
+    second: arrow_root
+  - first:
+      4: 400010
+    second: bottom_light
+  - first:
+      4: 400012
+    second: top_light
+  - first:
+      21: 2100000
+    second: b0b0b0
+  - first:
+      21: 2100002
+    second: arrow_material
+  - first:
+      23: 2300000
+    second: Box
+  - first:
+      23: 2300002
+    second: Box1
+  - first:
+      23: 2300004
+    second: arrow_model
+  - first:
+      23: 2300006
+    second: //RootNode
+  - first:
+      33: 3300000
+    second: Box
+  - first:
+      33: 3300002
+    second: Box1
+  - first:
+      33: 3300004
+    second: arrow_model
+  - first:
+      33: 3300006
+    second: //RootNode
+  - first:
+      43: 4300000
+    second: Box
+  - first:
+      43: 4300002
+    second: Box1
+  - first:
+      43: 4300004
+    second: arrow_model
+  - first:
+      108: 10800000
+    second: bottom_light
+  - first:
+      108: 10800002
+    second: top_light
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -69,7 +127,7 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 2
     addColliders: 0
     useSRGBMaterialColor: 1
     importVisibility: 1
@@ -79,18 +137,19 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -99,10 +158,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -112,6 +172,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
