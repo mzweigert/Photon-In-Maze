@@ -1,7 +1,10 @@
 ﻿
-public interface ICameraEvent {
+namespace PhotonInMaze.Game.GameCamera {
+    public interface ICameraEvent {
 
-    bool IsDone();
+        bool IsDone();
 
-    void Run();
+        void Run();
+    }
+
 }

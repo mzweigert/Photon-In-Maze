@@ -1,60 +1,55 @@
-﻿using UnityEngine;
+﻿using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Game.Manager;
+using PhotonInMaze.Game.Maze;
+using UnityEngine;
 
-public partial class PhotonController : MonoObserveable<PhotonState> {
+namespace PhotonInMaze.Game.Photon {
+    public partial class PhotonController : FlowObserveableBehviour<PhotonState> {
 
-    private MazeController mazeController;
+        private MazeController mazeController;
 
-    private PhotonState photonState;
+        private PhotonState photonState;
 
-    private Light photonLight;
-    private bool photonLightAlreadySet;
+        private Light photonLight;
 
-    [Range(0.1f, 2f)]
-    public float PhotonSpeed;
+        [Range(0.1f, 2f)]
+        public float PhotonSpeed;
 
-    // Start is called before the first frame update
-    void Start() {
-        Optional<MazeController> optionalMazeController = ObjectsManager.Instance.GetMazeScript();
-        if(optionalMazeController.HasNotValue) {
-            Debug.LogError("MazeController not preset!");
-            return;
-        }
-        mazeController = optionalMazeController.Get();
-        LastNodeCellFromPathToGoal = mazeController.PathsToGoal.First;
-        currentTargetMazeCell = new TargetMazeCell(LastNodeCellFromPathToGoal.Value, MovementEvent.Idle);
-        lastSaved = currentTargetMazeCell.value;
-        photonState = new PhotonState(transform.position);
-
-        photonLight = GetComponentInChildren<Light>();
-        photonLight.intensity = 0f;
-    }
-
-    // Update is called once per frame
-    void Update() {
-        if(mazeController == null || ObjectsManager.Instance.IsArrowPresent()) {
-            return;
-        }
-      
-        if(GameFlow.Instance.Is(GameFlow.State.LightTurnedOff) && photonLight && !photonLightAlreadySet) {
-            photonLight.intensity = 7.5f;
-            photonLightAlreadySet = true;
-            GameFlow.Instance.StartGame();
+        protected override PhotonState GetData() {
+            return photonState;
         }
 
-        GameFlow.Instance.CallUpdateWhenGameIsRunning(() => {
+        protected override IInvoke Init() {
+            mazeController = ObjectsManager.Instance.GetMazeScript();
+            LastNodeCellFromPathToGoal = mazeController.PathsToGoal.First;
+            currentTargetMazeCell = new TargetMazeCell(LastNodeCellFromPathToGoal.Value, MovementEvent.Idle);
+            lastSaved = currentTargetMazeCell.value;
+            photonState = new PhotonState(transform.position);
 
+            photonLight = GetComponentInChildren<Light>();
+            photonLight.intensity = 0f;
+
+            return GameFlowManager.Instance.Flow
+                .When(State.TurnOnPhotonLight)
+                .Then(() => {
+                    photonLight.intensity = 7.5f;
+                    GameFlowManager.Instance.Flow.NextState();
+                })
+                .OrElseWhen(State.GameRunning)
+                .Then(WaitForMove)
+                .Build();
+        }
+
+        private void WaitForMove() {
+            if(ObjectsManager.Instance.IsArrowPresent()) {
+                return;
+            }
             TryMakeMove();
 
-#if UNITY_EDITOR 
+#if UNITY_EDITOR
             CheckButtonPress();
 #endif
             CheckTouch();
-
-
-        });
-    }
-
-    protected override PhotonState GetData() {
-        return photonState;
+        }
     }
 }

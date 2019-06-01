@@ -1,19 +1,25 @@
-﻿using UnityEngine;
+﻿using PhotonInMaze.Common.Flow;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class TimeToEndController : MonoSingleton<TimeToEndController> {
+namespace PhotonInMaze.Game.CanvasGame.TimeToEnd {
+    public class TimeToEndController : FlowBehaviourSingleton<TimeToEndController> {
 
-    public float TimeToEnd { get; private set; } = 120f;
-    string minutes, seconds;
+        public float TimeToEnd { get; private set; } = 120f;
+        string minutes, seconds;
 
-    // Update is called once per frame
-    void Update() {
-        GameFlow.Instance.CallUpdateWhenGameIsRunning(() => {
+        protected override IInvoke Init() {
+            return GameFlowManager.Instance.Flow
+                .When(State.GameRunning)
+                .Then(CountDownTimeToEnd)
+                .Build();
+        }
+
+        private void CountDownTimeToEnd() {
             TimeToEnd -= Time.deltaTime;
 
             if(TimeToEnd <= 0f) {
-                //GameFlow.Instance.EndGame();
-
+                GameFlowManager.Instance.Flow.NextState();
             } else {
 
                 seconds = (TimeToEnd % 60).ToString("00");
@@ -23,8 +29,6 @@ public class TimeToEndController : MonoSingleton<TimeToEndController> {
                 }
                 gameObject.GetComponent<Text>().text = string.Format("Time to end: {0} : {1}", minutes, seconds);
             }
-
-        });
-        
+        }
     }
 }

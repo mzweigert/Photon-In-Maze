@@ -1,9 +1,10 @@
-﻿
-using System;
+﻿using System;
 
-public class CurrentEventNotPresentException : Exception {
-   
-    public CurrentEventNotPresentException() : base("Current event is not present") {
-        
+namespace PhotonInMaze.Game.GameCamera {
+    public class CurrentEventNotPresentException : Exception {
+
+        public CurrentEventNotPresentException() : base("Current event is not present") {
+
+        }
     }
 }

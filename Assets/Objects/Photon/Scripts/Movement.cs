@@ -1,13 +1,16 @@
-﻿public enum TouchMovement {
-    Left,
-    Right,
-    Up,
-    Down
-};
+﻿
+namespace PhotonInMaze.Game.Photon {
+    public enum TouchMovement {
+        Left,
+        Right,
+        Up,
+        Down
+    };
 
-public enum MovementEvent {
-    Idle,
-    Move,
-    Teleport,
-    ExitFromWormhole
-};
+    public enum MovementEvent {
+        Idle,
+        Move,
+        Teleport,
+        ExitFromWormhole
+    };
+}

@@ -2,117 +2,120 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Direction {
-    Start,
-    Right,
-    Front,
-    Left,
-    Back,
-};
-//<summary>
-//Class for representing concrete maze cell.
-//</summary>
-public class MazeCell {
 
-    public HashSet<Direction> Walls { get; internal set; } = new HashSet<Direction>();
-    public bool IsVisited { get; internal set; } = false;
-    public bool IsPathToGoal { get; internal set; } = false;
-    public bool IsGoal { get; internal set; } = false;
-    public bool IsTrap { get; internal set; } = false;
+namespace PhotonInMaze.Game.Maze {
+    public enum Direction {
+        Start,
+        Right,
+        Front,
+        Left,
+        Back,
+    };
+    //<summary>
+    //Class for representing concrete maze cell.
+    //</summary>
+    public class MazeCell {
 
-    public int Column { get; }
-    public int Row { get; }
-    public float X { get; }
-    public float Y { get; }
+        public HashSet<Direction> Walls { get; internal set; } = new HashSet<Direction>();
+        public bool IsVisited { get; internal set; } = false;
+        public bool IsPathToGoal { get; internal set; } = false;
+        public bool IsGoal { get; internal set; } = false;
+        public bool IsTrap { get; internal set; } = false;
 
-    public MazeCell(int row, int column, float cellLengthSide) {
-        this.Row = row;
-        this.Column = column;
-        this.X = column * cellLengthSide;
-        this.Y = row * cellLengthSide;
-    }
+        public int Column { get; }
+        public int Row { get; }
+        public float X { get; }
+        public float Y { get; }
 
-    public override bool Equals(object obj) {
-        var cell = obj as MazeCell;
-        return cell != null &&
-               Column == cell.Column &&
-               Row == cell.Row;
-    }
+        public MazeCell(int row, int column, float cellLengthSide) {
+            this.Row = row;
+            this.Column = column;
+            this.X = column * cellLengthSide;
+            this.Y = row * cellLengthSide;
+        }
 
-    public override int GetHashCode() {
-        var hashCode = 656739706;
-        hashCode = hashCode * -1521134295 + Column.GetHashCode();
-        hashCode = hashCode * -1521134295 + Row.GetHashCode();
-        return hashCode;
-    }
+        public override bool Equals(object obj) {
+            var cell = obj as MazeCell;
+            return cell != null &&
+                   Column == cell.Column &&
+                   Row == cell.Row;
+        }
 
-    internal Direction GetDirectionTo(MazeCell next) {
-        if(next == null) {
+        public override int GetHashCode() {
+            var hashCode = 656739706;
+            hashCode = hashCode * -1521134295 + Column.GetHashCode();
+            hashCode = hashCode * -1521134295 + Row.GetHashCode();
+            return hashCode;
+        }
+
+        internal Direction GetDirectionTo(MazeCell next) {
+            if(next == null) {
+                return Direction.Start;
+            } else if(Row < next.Row) {
+                return Direction.Right;
+            } else if(Row > next.Row) {
+                return Direction.Left;
+            } else if(Column < next.Column) {
+                return Direction.Back;
+            } else if(Column > next.Column) {
+                return Direction.Front;
+            }
             return Direction.Start;
-        } else if(Row < next.Row) {
-            return Direction.Right;
-        } else if(Row > next.Row) {
-            return Direction.Left;
-        } else if(Column < next.Column) {
-            return Direction.Back;
-        } else if(Column > next.Column) {
-            return Direction.Front;
         }
-        return Direction.Start;
-    }
 
-    public Vector2 ToVector2() {
-        return new Vector2(X, Y);
-    }
+        public Vector2 ToVector2() {
+            return new Vector2(X, Y);
+        }
 
-    internal HashSet<Direction> GetPossibleMovesDirection() {
-        HashSet<Direction> availableMoves = new HashSet<Direction>();
-        Array allDirections = System.Enum.GetValues(typeof(Direction));
-        foreach(Direction direction in allDirections) {
-            if(!Walls.Contains(direction) && direction != Direction.Start) {
-                availableMoves.Add(direction);
+        internal HashSet<Direction> GetPossibleMovesDirection() {
+            HashSet<Direction> availableMoves = new HashSet<Direction>();
+            Array allDirections = System.Enum.GetValues(typeof(Direction));
+            foreach(Direction direction in allDirections) {
+                if(!Walls.Contains(direction) && direction != Direction.Start) {
+                    availableMoves.Add(direction);
+                }
             }
+            return availableMoves;
         }
-        return availableMoves;
-    }
 
-    internal HashSet<Vector2Int> GetPossibleMovesCoords() {
-        HashSet<Vector2Int> availableMoves = new HashSet<Vector2Int>();
-        Array allDirections = System.Enum.GetValues(typeof(Direction));
-        foreach(Direction direction in allDirections) {
-            if(Walls.Contains(direction) || direction == Direction.Start) {
-                continue;
+        internal HashSet<Vector2Int> GetPossibleMovesCoords() {
+            HashSet<Vector2Int> availableMoves = new HashSet<Vector2Int>();
+            Array allDirections = System.Enum.GetValues(typeof(Direction));
+            foreach(Direction direction in allDirections) {
+                if(Walls.Contains(direction) || direction == Direction.Start) {
+                    continue;
+                }
+                Vector2Int move = MapDirectionToCoords(direction);
+                availableMoves.Add(move);
             }
-            Vector2Int move = MapDirectionToCoords(direction);
-            availableMoves.Add(move);
+            return availableMoves;
         }
-        return availableMoves;
-    }
 
-    private Vector2Int MapDirectionToCoords(Direction direction) {
-        switch(direction) {
-            case Direction.Back:
-                return new Vector2Int(Row - 1, Column);
-            case Direction.Left:
-                return new Vector2Int(Row, Column - 1);
-            case Direction.Right:
-                return new Vector2Int(Row, Column + 1);
-            case Direction.Front:
-                return new Vector2Int(Row + 1, Column);
+        private Vector2Int MapDirectionToCoords(Direction direction) {
+            switch(direction) {
+                case Direction.Back:
+                    return new Vector2Int(Row - 1, Column);
+                case Direction.Left:
+                    return new Vector2Int(Row, Column - 1);
+                case Direction.Right:
+                    return new Vector2Int(Row, Column + 1);
+                case Direction.Front:
+                    return new Vector2Int(Row + 1, Column);
+            }
+            return new Vector2Int(Row, Column);
         }
-        return new Vector2Int(Row, Column);
-    }
 
-    internal bool IsStartCell() {
-        return Column == 0 && Row == 0;
-    }
+        internal bool IsStartCell() {
+            return Column == 0 && Row == 0;
+        }
 
-    public override string ToString() {
-        return string.Format("[MazeCell {0} {1}]", Row, Column);
-    }
+        public override string ToString() {
+            return string.Format("[MazeCell {0} {1}]", Row, Column);
+        }
 
-    public string ToStringAsName() {
-        return string.Format("MazeCell_{0}_{1}", Row, Column);
-    }
+        public string ToStringAsName() {
+            return string.Format("MazeCell_{0}_{1}", Row, Column);
+        }
 
+    }
 }
