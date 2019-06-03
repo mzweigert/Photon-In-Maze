@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 namespace PhotonInMaze.Game.CanvasGame.Arrow {
-    public class ArrowButtonController : FlowBehaviour {
+    public class ArrowButtonController : FlowUpdateBehaviour {
 
         private enum AnimationState {
             Idle,
@@ -36,16 +36,18 @@ namespace PhotonInMaze.Game.CanvasGame.Arrow {
             currentTextState = AnimationState.Show;
         }
 
-        protected override IInvoke Init() {
+        public override void OnStart() {
             text = GetComponentInChildren<Text>();
             button = GetComponentInChildren<Button>();
             text.rectTransform.SetAsFirstSibling();
             text.text = ObjectsManager.Instance.ArrowHintsCount + "x";
-            hidePosition = text.rectTransform.anchoredPosition;
+            hidePosition = text.rectTransform.anchoredPosition = new Vector3(-40, 0, 0);
 
             showPosition = new Vector3(-125f, text.rectTransform.anchoredPosition.y);
             textColor = text.color;
+        }
 
+        public override IInvoke OnLoop() {
             return GameFlowManager.Instance.Flow
                 .WhenIsAny()
                 .ThenDo(WaitForAnimating)
@@ -75,6 +77,10 @@ namespace PhotonInMaze.Game.CanvasGame.Arrow {
                     }
                 }
             }
+        }
+
+        public override int GetInitOrder() {
+            return InitOrder.Default;
         }
     }
 }

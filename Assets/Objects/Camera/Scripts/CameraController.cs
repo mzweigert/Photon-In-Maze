@@ -17,8 +17,10 @@ namespace PhotonInMaze.Game.GameCamera {
         private CameraEventManager cameraEventManager = new CameraEventManager();
         private MazeController mazeScript;
         private new Camera camera;
-        private bool followThePhoton = false;
+        private bool followThePhoton;
         private CameraType type;
+        private Animator animator;
+
         [SerializeField]
         [Range(0.1f, 2f)]
         private float cameraSpeed = 0.15f;
@@ -51,32 +53,32 @@ namespace PhotonInMaze.Game.GameCamera {
             }
         }
 
-        protected override IInvoke Init() {
-            InitOnStart();
-            return GameFlowManager.Instance.Flow
-                .WhenIsAny()
-                .ThenDo(WaitForCameraEvent)
-                .Build();
-        }
-
-        private void InitOnStart() {
+        public override void OnStart() {
             camera = GetComponent<Camera>();
-            mazeScript = ObjectsManager.Instance.GetMazeScript();
-
+            mazeScript = MazeObjectsManager.Instance.GetMazeScript();
             float x = 0f, z = 0f, ratio = (float)Screen.width / Screen.height;
             x = (mazeScript.Columns * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
             z = (mazeScript.Rows * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
-            transform.position = new Vector3(x, transform.position.y, z);
-            initialCamPosition = camera.transform.position;
-            GameObject maze = ObjectsManager.Instance.GetMaze();
+            camera.transform.position = initialCamPosition = new Vector3(x, 50, z);
 
             float sizeForLongerColumnsLength = mazeScript.Columns * (mazeScript.LenghtOfCellSide / 2);
             float sizeForLongerRowsLength = mazeScript.Rows * (mazeScript.LenghtOfCellSide / 2);
             initialOrtographicSize = sizeForLongerColumnsLength * ratio > sizeForLongerRowsLength ?
                                      sizeForLongerColumnsLength : sizeForLongerRowsLength;
             camera.orthographicSize = initialOrtographicSize += offsetCam;
-
             camera.fieldOfView = CalculateFOV(initialOrtographicSize, initialCamPosition.y);
+            camera.orthographic = true;
+            type = CameraType.Area;
+            currentPhotonPosition = previousPhotonPosition = ObjectsManager.Instance.GetPhotonScript().InitialPosition;
+            followThePhoton = false;
+            animator = transform.GetComponent<Animator>();
+        }
+
+        public override IInvoke OnLoop() {
+            return GameFlowManager.Instance.Flow
+                .WhenIsAny()
+                .ThenDo(WaitForCameraEvent)
+                .Build();
         }
 
         private void WaitForCameraEvent() {
@@ -94,7 +96,10 @@ namespace PhotonInMaze.Game.GameCamera {
 #endif
                 ChangeCameraView(deltaMagnitudeDiff);
             }
+        }
 
+        public override int GetInitOrder() {
+            return InitOrder.Camera;
         }
 
     }

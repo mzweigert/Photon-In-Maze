@@ -1,7 +1,7 @@
 ﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Game.Arrow;
 using PhotonInMaze.Game.GameCamera;
-using PhotonInMaze.Game.Maze;
 using PhotonInMaze.Game.MazeLight;
 using PhotonInMaze.Game.Photon;
 using UnityEngine;
@@ -9,53 +9,32 @@ using UnityEngine;
 namespace PhotonInMaze.Game.Manager {
     public class ObjectsManager : SceneSingleton<ObjectsManager> {
 
-        private ObjectsManager() {
-            arrowObserver = new ArrowObserver();
-        }
-
         [Range(1, 255)]
         [SerializeField]
-        private byte _arrowHintsCount;
-        public byte ArrowHintsCount {
-            get {
-                return _arrowHintsCount;
-            }
-            private set {
-                _arrowHintsCount = value;
-            }
-        }
+        private byte _initialArrowHintsCount;
+
+        public byte ArrowHintsCount { get; private set; }
 
         private ArrowObserver arrowObserver;
+
+        private ObjectsManager() { }
+
+        private void Start() {
+            arrowObserver = new ArrowObserver();
+            ArrowHintsCount = _initialArrowHintsCount;
+        }
 
         [SerializeField]
         private Camera areaCamera = null;
 
         [SerializeField]
-        private Light directionalLight = null;
-
-        [SerializeField]
-        private GameObject maze = null;
-
-        [SerializeField]
-        private GameObject floor = null;
-
-        [SerializeField]
-        private GameObject wall = null;
+        private Light areaLight = null;
 
         [SerializeField]
         private GameObject photon = null;
 
         [SerializeField]
         private GameObject arrow = null;
-
-        [SerializeField]
-        private GameObject blackHole = null;
-
-        [SerializeField]
-        private GameObject whiteHole = null;
-
-        [SerializeField]
-        private Canvas canvas = null;
 
         public Camera GetAreaCamera() {
             LogIfObjectIsNull(areaCamera, "AreaCamera");
@@ -68,36 +47,15 @@ namespace PhotonInMaze.Game.Manager {
             return script;
 
         }
-        public Light GetDirectionalLight() {
-            LogIfObjectIsNull(directionalLight, "DirectionalLight");
-            return directionalLight;
+        public Light GetAreaLight() {
+            LogIfObjectIsNull(areaLight, "AreaLight");
+            return areaLight;
         }
 
-        public LightController GetDirectionalLightScript() {
-            var script = directionalLight.GetComponent<LightController>();
-            LogIfObjectIsNull(script, "DirectionalLightController");
+        public AreaLightController GetAreaLightScript() {
+            var script = areaLight.GetComponent<AreaLightController>();
+            LogIfObjectIsNull(script, "AreaLightController");
             return script;
-        }
-
-        public GameObject GetMaze() {
-            LogIfObjectIsNull(maze, "Maze");
-            return maze;
-        }
-
-        public MazeController GetMazeScript() {
-            var script = maze.GetComponent<MazeController>();
-            LogIfObjectIsNull(script, "MazeController");
-            return script;
-        }
-
-        public GameObject GetFloor() {
-            LogIfObjectIsNull(floor, "Floor");
-            return floor;
-        }
-
-        public GameObject GetWall() {
-            LogIfObjectIsNull(wall, "Wall");
-            return wall;
         }
 
         public GameObject GetPhoton() {
@@ -122,28 +80,13 @@ namespace PhotonInMaze.Game.Manager {
             return script;
         }
 
-        public GameObject GetBlackHole() {
-            LogIfObjectIsNull(arrow, "BlackHole");
-            return blackHole;
-        }
-
-        public GameObject GetWhiteHole() {
-            LogIfObjectIsNull(whiteHole, "WhiteHole");
-            return whiteHole;
-        }
-
-        public Canvas GetCanvas() {
-            LogIfObjectIsNull(canvas, "Canvas");
-            return canvas;
-        }
-
         public bool IsArrowPresent() {
             return arrowObserver.ArrowIsPresent;
         }
 
         public byte SpawnArrow() {
             if(ArrowHintsCount > 0) {
-                var newArrow = Instantiate(arrow, maze.transform);
+                var newArrow = Instantiate(arrow, MazeObjectsManager.Instance.GetMaze().transform);
                 newArrow.name = "Arrow";
                 arrowObserver.Subscribe(newArrow);
                 ArrowHintsCount--;
@@ -157,5 +100,10 @@ namespace PhotonInMaze.Game.Manager {
             }
         }
 
+        public void ReinitializeArrowHintsCount() {
+            if(GameFlowManager.Instance.Flow.Is(State.EndGame)) {
+                ArrowHintsCount = _initialArrowHintsCount;
+            }
+        }
     }
 }

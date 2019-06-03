@@ -7,6 +7,7 @@ namespace PhotonInMaze.Game.Photon {
 
         private Vector2 fingerStart, fingerEnd;
         private bool canSwipe = true;
+        EventSystem es;
 
         private void CheckButtonPress() {
             if(CheckIfAnyPressed(KeyCode.W, KeyCode.UpArrow)) {
@@ -32,7 +33,8 @@ namespace PhotonInMaze.Game.Photon {
         private void CheckTouch() {
             if(Input.touchCount == 1) {
                 Touch touch = Input.GetTouch(0);
-                if(EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {
+                es = EventSystem.current;
+                if(es.IsPointerOverGameObject(touch.fingerId) && es.currentSelectedGameObject != null) {
                     canSwipe = false;
                     return;
                 }

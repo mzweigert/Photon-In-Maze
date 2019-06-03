@@ -4,13 +4,14 @@ using System.Linq;
 using PhotonInMaze.Common;
 using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Game.Manager;
+using System;
 
 namespace PhotonInMaze.Game.Maze {
-    public partial class MazeController : FlowBehaviour {
+    public partial class MazeController : FlowUpdateBehaviour {
 
         public Dictionary<int, MazeCell> Wormholes { get; private set; } = new Dictionary<int, MazeCell>();
-        public HashSet<MazeCell> BlackHolesPositions { get; private set; } = new HashSet<MazeCell>();
-        public HashSet<MazeCell> WhiteHolesPositions { get; private set; } = new HashSet<MazeCell>();
+        public HashSet<MazeCell> BlackHolesPositions { get; private set; }
+        public HashSet<MazeCell> WhiteHolesPositions { get; private set; }
 
         private enum HoleType {
             Black, White
@@ -22,13 +23,13 @@ namespace PhotonInMaze.Game.Maze {
             }
             GameObject hole = null;
             counter++;
-            if(!cell.IsStartCell() && !cell.IsGoal && counter == 10) {
+            if(!cell.IsStartCell() && !cell.IsGoal && counter == 15) {
                 if(type == HoleType.Black) {
-                    GameObject blackHolePrototype = ObjectsManager.Instance.GetBlackHole();
+                    GameObject blackHolePrototype = MazeObjectsManager.Instance.GetBlackHole();
                     hole = Instantiate(blackHolePrototype, cellGameObject);
                     hole.name = string.Format("BlackHole_{0}_{1}", cell.Row, cell.Column);
                 } else if(type == HoleType.White) {
-                    GameObject whiteHolePrefab = ObjectsManager.Instance.GetWhiteHole();
+                    GameObject whiteHolePrefab = MazeObjectsManager.Instance.GetWhiteHole();
                     hole = Instantiate(whiteHolePrefab, cellGameObject);
                     hole.name = string.Format("WhiteHole_{0}_{1}", cell.Row, cell.Column);
                 }
@@ -50,7 +51,8 @@ namespace PhotonInMaze.Game.Maze {
             Dictionary<int, MazeCell> wormholes = new Dictionary<int, MazeCell>();
             blackholes = blackholes.GetRange(0, length).OrderBy(x => random.Next()).ToList();
             whiteholes = whiteholes.GetRange(0, length).OrderBy(x => random.Next()).ToList();
-
+            BlackHolesPositions = new HashSet<MazeCell>();
+            WhiteHolesPositions = new HashSet<MazeCell>();
             for(int i = 0; i < length; i++) {
                 int blackHoleId = blackholes[i].gameObject.transform.GetInstanceID();
                 MazeCell whiteHoleCell = whiteholes[i].cell;

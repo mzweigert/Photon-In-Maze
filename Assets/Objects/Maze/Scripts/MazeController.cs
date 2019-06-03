@@ -1,4 +1,5 @@
 ﻿using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Game.GameCamera;
 using PhotonInMaze.Game.Manager;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace PhotonInMaze.Game.Maze {
         Division
     }
 
-    public partial class MazeController : FlowBehaviour {
+    public partial class MazeController : FlowUpdateBehaviour {
 
         [SerializeField]
         private MazeGenerationAlgorithm Algorithm = MazeGenerationAlgorithm.PureRecursive;
@@ -23,61 +24,90 @@ namespace PhotonInMaze.Game.Maze {
         private int RandomSeed = 12345;
 
         [Range(5, 50)]
-        public int Rows = 5;
-        [Range(5, 50)]
-        public int Columns = 5;
+        [SerializeField]
+        private int _rows = 5;
+        public int Rows { get { return _rows; } }
 
+        [Range(5, 50)]
+        [SerializeField]
+        private int _columns = 5;
+        public int Columns { get { return _columns; } }
+
+        private byte stage = 0;
         public float LenghtOfCellSide { get; } = 4f;
         public float ScaleOfCellSide { get { return LenghtOfCellSide / 4f; } }
 
-       
         private GameObject wallPrototype, floorPrototype;
         private BasicMazeGenerator mazeGenerator = null;
 
-        void Awake() {
+        public override void OnStart() {
             if(!FullRandom) {
                 Random.InitState(RandomSeed);
             }
-            wallPrototype = ObjectsManager.Instance.GetWall();
+            wallPrototype = MazeObjectsManager.Instance.GetWall();
             Vector3 wallScale = wallPrototype.transform.localScale;
             wallScale.x = ScaleOfCellSide;
             wallPrototype.transform.localScale = wallScale;
 
-            floorPrototype = ObjectsManager.Instance.GetFloor();
+            floorPrototype = MazeObjectsManager.Instance.GetFloor();
             Vector3 floorScale = floorPrototype.transform.localScale;
             floorScale.x = LenghtOfCellSide;
             floorScale.z = LenghtOfCellSide;
             floorPrototype.transform.localScale = floorScale;
 
-            finder = new MazeCellFinder(Rows, Columns);
-            mazeGenerator = InitGenerator(Rows, Columns);
-            mazeGenerator.GenerateMaze();
-            PathsToGoal = FindPathToGoal();
-            CreateMazeWithItems();
+            finder = new MazeCellFinder(_rows, _columns);
+            mazeGenerator = InitGenerator(_rows, _columns);
         }
 
         private BasicMazeGenerator InitGenerator(int rows, int columns) {
             switch(Algorithm) {
                 case MazeGenerationAlgorithm.RandomTree:
-                    return new RandomTreeMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new RandomTreeMazeGenerator(_rows, _columns, LenghtOfCellSide);
                 case MazeGenerationAlgorithm.Division:
-                    return new DivisionMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new DivisionMazeGenerator(_rows, _columns, LenghtOfCellSide);
                 case MazeGenerationAlgorithm.PureRecursive:
                 default:
-                    return new RecursiveMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new RecursiveMazeGenerator(_rows, _columns, LenghtOfCellSide);
             }
         }
 
-        protected override IInvoke Init() {
+        public override IInvoke OnLoop() {
             return GameFlowManager.Instance.Flow
-                .When(State.DestroyPathToGoal)
+                .When(State.GenerateMaze)
+                .Then(() => {
+                    mazeGenerator.GenerateMaze();
+                    PathsToGoal = FindPathToGoal();
+                    CreateMazeWithItems();
+                    GameFlowManager.Instance.Flow.NextState();
+                })
+                .OrElseWhen(State.MazeCreated)
+                .Then(() => StartCoroutine(GameFlowManager.Instance.Flow.ChangeStateAfterFrameEnd()))
+                .OrElseWhen(State.DestroyPathToGoal)
                 .Then(() => {
                     foreach(GameObject cell in pathToGoalsGameObjects) {
                         Destroy(cell);
                     }
                     GameFlowManager.Instance.Flow.NextState();
                 })
+                .OrElseWhen(State.EndGame)
+                .Then(NextStage)
                 .Build();
+        }
+
+        private void NextStage() {
+            if(GameFlowManager.Instance.Flow.Is(State.EndGame)) {
+                stage++;
+                _rows += stage;
+                _columns += stage;
+                ObjectsManager.Instance.ReinitializeArrowHintsCount();
+                GameFlowManager.Instance.ReinitializeFlowBehaviours();
+            } else {
+                Debug.LogWarning("Cannot set next stage. Game should has state: " + State.EndGame);
+            }
+        }
+
+        public override int GetInitOrder() {
+            return InitOrder.Maze;
         }
     }
 }

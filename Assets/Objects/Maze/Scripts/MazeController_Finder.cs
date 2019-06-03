@@ -4,11 +4,10 @@ using PhotonInMaze.Common;
 using PhotonInMaze.Common.Flow;
 
 namespace PhotonInMaze.Game.Maze {
-    public partial class MazeController : FlowBehaviour {
+    public partial class MazeController : FlowUpdateBehaviour {
 
         public OrderedSet<MazeCell> PathsToGoal { get; private set; }
         protected MazeCellFinder finder;
-
 
         public Optional<MazeCell> FindMazeCell(int row, int column) {
             try {
@@ -50,11 +49,11 @@ namespace PhotonInMaze.Game.Maze {
             MazeCell exitCell = FindMazeCell(Rows - 1, Columns - 1).Get();
             exitCell.IsGoal = true;
             exitCell.Walls.Remove(Direction.Front);
-            OrderedSet<MazeCell> path = FindPathToGoal(exitCell, Direction.Start);
+            OrderedSet<MazeCell> path = FindInitialPathToGoal(exitCell, Direction.Start);
             return path;
         }
 
-        private OrderedSet<MazeCell> FindPathToGoal(MazeCell current, Direction moveMade) {
+        private OrderedSet<MazeCell> FindInitialPathToGoal(MazeCell current, Direction moveMade) {
             OrderedSet<MazeCell> pathToGoal = new OrderedSet<MazeCell>();
             HashSet<Direction> movesAvailable = current.GetPossibleMovesDirection();
             if(moveMade != Direction.Start) {
@@ -69,7 +68,7 @@ namespace PhotonInMaze.Game.Maze {
                     next.IsPathToGoal = true;
                     visitedCells.Add(next);
                     movesAvailable.Remove(ctv.MoveMade);
-                    OrderedSet<MazeCell> pathInNext = FindPathToGoal(next, ctv.MoveMade);
+                    OrderedSet<MazeCell> pathInNext = FindInitialPathToGoal(next, ctv.MoveMade);
                     if(pathInNext.Count > 0) {
                         pathToGoal = pathInNext;
                     }

@@ -80,7 +80,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b48da6c05ed5e47943ac3d91b06cc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  photonLight: {fileID: 2662758752147803612}
   PhotonSpeed: 0.75
   leakedLightContainer: {fileID: 4947372675846508579}
   particleLightTemplate: {fileID: 7969429887781247636, guid: 37cb39e042c90fb44bae0fdd6950ec40,

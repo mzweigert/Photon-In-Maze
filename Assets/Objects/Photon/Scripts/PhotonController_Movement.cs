@@ -22,21 +22,24 @@ namespace PhotonInMaze.Game.Photon {
         private void ChangePositionInfoInPathToGoal(TargetMazeCell targetCell) {
             if(LastNodeCellFromPathToGoal == null) {
                 photonState.IsInPathToGoal = false;
-            } else if(targetCell.IsGoal) {
-                print("Congratulations! You are finished maze!");
-            } else if(LastNodeCellFromPathToGoal.Next != null && targetCell.value.Equals(LastNodeCellFromPathToGoal.Next.Value)) {
+            } else if(LastNodeCellFromPathToGoal.Next != null && 
+                targetCell.value.Equals(LastNodeCellFromPathToGoal.Next.Value)) {
+
                 LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Next;
                 photonState.IndexOfLastCellInPathToGoal++;
-            } else if(LastNodeCellFromPathToGoal.Previous != null && targetCell.value.Equals(LastNodeCellFromPathToGoal.Previous.Value)) {
+            } else if(LastNodeCellFromPathToGoal.Previous != null && 
+                targetCell.value.Equals(LastNodeCellFromPathToGoal.Previous.Value)) {
+
                 LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Previous;
                 photonState.IndexOfLastCellInPathToGoal--;
-            } else if(!targetCell.Equals(LastNodeCellFromPathToGoal.Value) && targetCell.movementEvent == MovementEvent.Teleport) {
+            } else if(!targetCell.Equals(LastNodeCellFromPathToGoal.Value) && 
+                targetCell.movementEvent == MovementEvent.Teleport) {
+
                 LinkedListNode<MazeCell> nearPathToGoal = mazeController.FindCellFromPathToGoalNear(targetCell.value);
                 if(nearPathToGoal != null) {
                     LastNodeCellFromPathToGoal = nearPathToGoal;
                     int index = mazeController.PathsToGoal.IndexOf(nearPathToGoal.Value);
                     photonState.IndexOfLastCellInPathToGoal = index;
-
                 }
             } else if(!targetCell.Equals(LastNodeCellFromPathToGoal.Value) && photonState.IsInPathToGoal) {
                 photonState.IsInPathToGoal = false;
@@ -65,15 +68,15 @@ namespace PhotonInMaze.Game.Photon {
                     if(Vector3.Distance(transform.position, targetPosition) <= minDistanceToNextMove) {
                         transform.position = targetPosition;
                         photonState.IsAcutallyMoving = false;
+                        if(currentTargetMazeCell.IsGoal) {
+                            GameFlowManager.Instance.Flow.NextState();
+                        }
                     }
                     photonState.RealPosition = transform.position;
                     break;
                 case MovementEvent.Teleport:
-                    List<ParticleSystem> particles = GetComponentsInChildren<ParticleSystem>().ToList();
-                    particles.ForEach(particle => particle.gameObject.SetActive(false));
                     photonState.RealPosition = transform.position = targetPosition;
                     photonState.IsAcutallyMoving = false;
-                    particles.ForEach(particle => particle.gameObject.SetActive(true));
                     break;
                 case MovementEvent.ExitFromWormhole:
                     PhotonSpeed *= (1 / teleportingSpeed);
@@ -89,27 +92,22 @@ namespace PhotonInMaze.Game.Photon {
                 return;
             }
 
-            switch(movementDirection) {
-                case TouchMovement.Left:
-                    if(!lastSaved.Walls.Contains(Direction.Back)) {
-                        PushToQueueMoves(lastSaved.Row - 1, lastSaved.Column, MovementEvent.Move);
-                    }
-                    break;
-                case TouchMovement.Right:
-                    if(!lastSaved.Walls.Contains(Direction.Front) && !lastSaved.IsGoal) {
-                        PushToQueueMoves(lastSaved.Row + 1, lastSaved.Column, MovementEvent.Move);
-                    }
-                    break;
-                case TouchMovement.Up:
-                    if(!lastSaved.Walls.Contains(Direction.Left)) {
-                        PushToQueueMoves(lastSaved.Row, lastSaved.Column - 1, MovementEvent.Move);
-                    }
-                    break;
-                case TouchMovement.Down:
-                    if(!lastSaved.Walls.Contains(Direction.Right)) {
-                        PushToQueueMoves(lastSaved.Row, lastSaved.Column + 1, MovementEvent.Move);
-                    }
-                    break;
+            if(movementDirection == TouchMovement.Left && !lastSaved.Walls.Contains(Direction.Back)) {
+
+                PushToQueueMoves(lastSaved.Row - 1, lastSaved.Column, MovementEvent.Move);
+
+            } else if(movementDirection == TouchMovement.Right && !lastSaved.Walls.Contains(Direction.Front) && !lastSaved.IsGoal) {
+
+                PushToQueueMoves(lastSaved.Row + 1, lastSaved.Column, MovementEvent.Move);
+
+            } else if(movementDirection == TouchMovement.Up && !lastSaved.Walls.Contains(Direction.Left)) {
+
+                PushToQueueMoves(lastSaved.Row, lastSaved.Column - 1, MovementEvent.Move);
+
+            } else if(movementDirection == TouchMovement.Down && !lastSaved.Walls.Contains(Direction.Right)) {
+
+                PushToQueueMoves(lastSaved.Row, lastSaved.Column + 1, MovementEvent.Move);
+
             }
         }
 
@@ -132,14 +130,18 @@ namespace PhotonInMaze.Game.Photon {
             bool isBlackHole = mazeController.IsBlackHolePosition(newCell) && movementEvent == MovementEvent.Move;
             if(isBlackHole) {
                 return () => {
-                    GetComponent<Animator>().SetTrigger("InsideWormhole");
+                    animator.SetTrigger("TurnOffLight");
+                    animator.SetTrigger("Hide");
                     PhotonSpeed *= teleportingSpeed;
                 };
             };
             bool isOutsideWhiteHole = mazeController.IsWhiteHolePosition(newCell) &&
                  movementEvent == MovementEvent.Teleport;
             if(isOutsideWhiteHole) {
-                return () => GetComponent<Animator>().SetTrigger("OutsideWormhole");
+                return () => {
+                    animator.SetTrigger("TurnOnLight");
+                    animator.SetTrigger("Show");
+                };
             }
 
             return null;

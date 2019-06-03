@@ -5,10 +5,14 @@ using UnityEngine.UI;
 namespace PhotonInMaze.Game.CanvasGame.TimeToEnd {
     public class TimeToEndController : FlowBehaviourSingleton<TimeToEndController> {
 
-        public float TimeToEnd { get; private set; } = 120f;
+        public float TimeToEnd { get; private set; }
         string minutes, seconds;
 
-        protected override IInvoke Init() {
+        public override void OnStart() {
+            TimeToEnd = 120f;
+        }
+
+        public override IInvoke OnLoop() {
             return GameFlowManager.Instance.Flow
                 .When(State.GameRunning)
                 .Then(CountDownTimeToEnd)
@@ -29,6 +33,10 @@ namespace PhotonInMaze.Game.CanvasGame.TimeToEnd {
                 }
                 gameObject.GetComponent<Text>().text = string.Format("Time to end: {0} : {1}", minutes, seconds);
             }
+        }
+
+        public override int GetInitOrder() {
+            return InitOrder.Default;
         }
     }
 }

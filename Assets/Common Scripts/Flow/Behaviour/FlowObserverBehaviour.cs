@@ -2,12 +2,13 @@
 using UnityEngine;
 
 namespace PhotonInMaze.Common.Flow {
-    public abstract class FlowObserverBehaviour<Controller, DataType> : FlowBehaviour, IObserver<DataType>
+    public abstract class FlowObserverBehaviour<Controller, DataType> : FlowUpdateBehaviour, IObserver<DataType>
     where Controller : FlowObserveableBehviour<DataType> {
 
         private IDisposable unsubscriber;
 
-        void Awake() {
+        private new void Awake() {
+            base.Awake();
             Controller controller = FindObjectOfType<Controller>();
             if(controller != null) {
                 unsubscriber = controller.Subscribe(this);
