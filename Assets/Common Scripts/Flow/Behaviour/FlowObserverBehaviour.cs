@@ -1,19 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PhotonInMaze.Common.Flow {
     public abstract class FlowObserverBehaviour<Controller, DataType> : FlowUpdateBehaviour, IObserver<DataType>
-    where Controller : FlowObserveableBehviour<DataType> {
+    where Controller : IObservable<DataType> {
 
-        private IDisposable unsubscriber;
+        private List<IDisposable> unsubscribers = new List<IDisposable>();
 
         private new void Awake() {
             base.Awake();
-            Controller controller = FindObjectOfType<Controller>();
-            if(controller != null) {
-                unsubscriber = controller.Subscribe(this);
+            IEnumerable<Controller> controllers = FindObjectsOfType<FlowObserveableBehviour<DataType>>().OfType<Controller>();
+            if(controllers != null) {
+                foreach(Controller controller in controllers) {
+                    IDisposable unsubscriber = controller.Subscribe(this);
+                    unsubscribers.Add(unsubscriber);
+                }
             } else {
-                Debug.LogError(string.Format("Cannot find {0} script!", controller));
+                Debug.LogError(string.Format("Cannot find {0} script!", controllers));
             }
         }
 
@@ -28,8 +33,8 @@ namespace PhotonInMaze.Common.Flow {
         public abstract void OnNext(DataType state);
 
         public void Unsubscribe() {
-            if(unsubscriber != null) {
-                unsubscriber.Dispose();
+            if(unsubscribers != null) {
+                unsubscribers.ForEach(unsubscriber => unsubscriber.Dispose());
             } else {
                 Debug.LogError("Cannot unsubscribe, object is null!");
             }

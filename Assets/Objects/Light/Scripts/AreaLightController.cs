@@ -1,11 +1,13 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
+using PhotonInMaze.Provider;
 using UnityEngine;
 
 
-namespace PhotonInMaze.Game.MazeLight {
-    public class AreaLightController : FlowObserverBehaviour<PhotonController, PhotonState> {
+namespace PhotonInMaze.MazeLight {
+
+    public class AreaLightController : FlowObserverBehaviour<IPhotonController, IPhotonState>, IAreaLightController {
 
         private AudioSource audioSource;
 
@@ -18,7 +20,7 @@ namespace PhotonInMaze.Game.MazeLight {
         private int lastPathToGoalIndex;
        
 
-        public override void OnStart() {
+        public override void OnInit() {
             audioSource = GetComponent<AudioSource>();
             light = GetComponent<Light>();
             onePercentLightInensity = (maxLightIntensity - minLightIntensity) / 100;
@@ -35,12 +37,12 @@ namespace PhotonInMaze.Game.MazeLight {
                 .When(State.DimAreaLight)
                 .Then(dimLight.Invoke)
                 .OrElseWhen(State.MazeCreated)
-                .Then(() => pathToGoalCount = MazeObjectsManager.Instance.GetMazeScript().PathsToGoal.Count)
+                .Then(() => pathToGoalCount = MazeObjectsProvider.Instance.GetPathToGoalManager().GetPathToGoalSize())
                 .Build();
         }
 
 
-        public override void OnNext(PhotonState state) {
+        public override void OnNext(IPhotonState state) {
             if(state.IndexOfLastCellInPathToGoal != lastPathToGoalIndex) {
                 lastPathToGoalIndex = state.IndexOfLastCellInPathToGoal;
                 float delta = onePercentLightInensity * (((float)lastPathToGoalIndex / pathToGoalCount) * 100f);

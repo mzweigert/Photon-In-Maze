@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PhotonInMaze.Common.Flow {
+namespace PhotonInMaze.Common.Observer {
     public abstract class MonoObserveable<DataType> : MonoBehaviour, IObservable<DataType> {
 
         private HashSet<IObserver<DataType>> observers = new HashSet<IObserver<DataType>>();

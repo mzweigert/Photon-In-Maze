@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,8 +6,7 @@ using UnityEngine;
 namespace PhotonInMaze.Common.Flow {
     public abstract class FlowBehaviour : MonoBehaviour, IFlowBehaviour {
 
-        private IFlowManager flowManager;
-        private IInvoke action;
+        protected IFlowManager flowManager;
 
         protected void Awake() {
             IEnumerable<IFlowManager> flowManager = FindObjectsOfType<MonoBehaviour>().OfType<IFlowManager>();
@@ -24,19 +22,11 @@ namespace PhotonInMaze.Common.Flow {
             this.flowManager.RegisterFlowBehaviour(this);
         }
 
-        internal void TryInvokeLoop() {
-            if(flowManager != null) {
-                action?.Invoke(flowManager.GetCurrentState());
-            }
-        }
-
-        public abstract void OnStart();
-        public abstract IInvoke OnLoop();
+        public abstract void OnInit();
         public abstract int GetInitOrder();
 
-        public void Prepare() {
-            OnStart();
-            this.action = OnLoop();
+        public virtual void Prepare() {
+            OnInit();
         }
     }
 

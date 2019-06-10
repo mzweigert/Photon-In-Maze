@@ -1,22 +1,20 @@
-﻿using PhotonInMaze.Game.Maze;
+﻿using PhotonInMaze.Common.Model;
 using System;
 
-namespace PhotonInMaze.Game.Photon {
-    public struct TargetMazeCell {
+namespace PhotonInMaze.Photon {
+    internal struct TargetMazeCell {
 
-        internal MazeCell value;
+        internal IMazeCell value;
         internal MovementEvent movementEvent;
         private Action additionalAction;
 
-        public TargetMazeCell(MazeCell value, MovementEvent movementEvent) {
+        public TargetMazeCell(IMazeCell value, MovementEvent movementEvent) {
             this.value = value;
             this.movementEvent = movementEvent;
             this.additionalAction = null;
         }
 
-        public TargetMazeCell(MazeCell value, MovementEvent movementEvent, Action action) : this(value, movementEvent) {
-            this.value = value;
-            this.movementEvent = movementEvent;
+        public TargetMazeCell(IMazeCell value, MovementEvent movementEvent, Action action) : this(value, movementEvent) {
             this.additionalAction = action;
         }
 

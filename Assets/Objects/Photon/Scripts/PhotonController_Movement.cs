@@ -1,50 +1,46 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Maze;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Model;
 
-namespace PhotonInMaze.Game.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<PhotonState> {
+namespace PhotonInMaze.Photon {
+    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         private Queue<TargetMazeCell> movementsToMake = new Queue<TargetMazeCell>();
 
-        public LinkedListNode<MazeCell> LastNodeCellFromPathToGoal { get; private set; }
-
         private TargetMazeCell currentTargetMazeCell;
-        public MazeCell CurrentMazeCell { get { return currentTargetMazeCell.value; } }
+        public IMazeCell CurrentMazeCell { get { return currentTargetMazeCell.value; } }
 
-        private MazeCell lastSaved;
+        private IMazeCell lastSaved;
         private readonly float minDistanceToNextMove = 0.1f;
         private readonly float teleportingSpeed = 0.5f;
 
         private void ChangePositionInfoInPathToGoal(TargetMazeCell targetCell) {
-            if(LastNodeCellFromPathToGoal == null) {
-                photonState.IsInPathToGoal = false;
-            } else if(LastNodeCellFromPathToGoal.Next != null && 
-                targetCell.value.Equals(LastNodeCellFromPathToGoal.Next.Value)) {
+            LinkedListNode<IMazeCell> first = pathToGoalManager.GetFirstFromPath();
+            if(first.Next != null && targetCell.value.Equals(first.Next.Value)) {
 
-                LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Next;
-                photonState.IndexOfLastCellInPathToGoal++;
-            } else if(LastNodeCellFromPathToGoal.Previous != null && 
-                targetCell.value.Equals(LastNodeCellFromPathToGoal.Previous.Value)) {
+                pathToGoalManager.RemoveFirst();
+                if(targetCell.value.IsProperPathToGoal) {
+                    photonState.IndexOfLastCellInPathToGoal++;
+                }
+                return;
+            } 
+            
+            if(targetCell.movementEvent == MovementEvent.Move) {
+                pathToGoalManager.AddFirst(targetCell.value);
+                if(targetCell.value.IsProperPathToGoal) {
+                    photonState.IndexOfLastCellInPathToGoal--;
+                }
+            } else if(targetCell.movementEvent == MovementEvent.Teleport) {
 
-                LastNodeCellFromPathToGoal = LastNodeCellFromPathToGoal.Previous;
-                photonState.IndexOfLastCellInPathToGoal--;
-            } else if(!targetCell.Equals(LastNodeCellFromPathToGoal.Value) && 
-                targetCell.movementEvent == MovementEvent.Teleport) {
-
-                LinkedListNode<MazeCell> nearPathToGoal = mazeController.FindCellFromPathToGoalNear(targetCell.value);
-                if(nearPathToGoal != null) {
-                    LastNodeCellFromPathToGoal = nearPathToGoal;
-                    int index = mazeController.PathsToGoal.IndexOf(nearPathToGoal.Value);
+                IMazeCell firstFromProperPathToGoal = pathToGoalManager.FindPathToGoalFrom(targetCell.value);
+                if(firstFromProperPathToGoal != null) {
+                    int index = pathToGoalManager.IndexInPath(firstFromProperPathToGoal);
                     photonState.IndexOfLastCellInPathToGoal = index;
                 }
-            } else if(!targetCell.Equals(LastNodeCellFromPathToGoal.Value) && photonState.IsInPathToGoal) {
-                photonState.IsInPathToGoal = false;
-            } else if(!photonState.IsInPathToGoal) {
-                photonState.IsInPathToGoal = true;
+
             }
         }
 
@@ -112,21 +108,19 @@ namespace PhotonInMaze.Game.Photon {
         }
 
         private void PushToQueueMoves(int row, int column, MovementEvent movementEvent) {
-            mazeController
-                .FindMazeCell(row, column)
-                .IfPresent(newCell => {
-                    bool cantPushNewMove = mazeController.IsWhiteHolePosition(newCell) && movementEvent == MovementEvent.Move;
-                    if(cantPushNewMove) {
-                        return;
-                    }
-                    lastSaved = newCell;
-                    Action actionBeforeMove = MakeActionOnNewMove(newCell, movementEvent);
-                    TargetMazeCell target = new TargetMazeCell(newCell, movementEvent, actionBeforeMove);
-                    movementsToMake.Enqueue(target);
-                });
+            IMazeCell newCell = mazeCellManager.GetMazeCell(row, column);
+
+            bool cantPushNewMove = mazeController.IsWhiteHolePosition(newCell) && movementEvent == MovementEvent.Move;
+            if(cantPushNewMove) {
+                return;
+            }
+            lastSaved = newCell;
+            Action actionBeforeMove = MakeActionOnNewMove(newCell, movementEvent);
+            TargetMazeCell target = new TargetMazeCell(newCell, movementEvent, actionBeforeMove);
+            movementsToMake.Enqueue(target);
         }
 
-        private Action MakeActionOnNewMove(MazeCell newCell, MovementEvent movementEvent) {
+        private Action MakeActionOnNewMove(IMazeCell newCell, MovementEvent movementEvent) {
             bool isBlackHole = mazeController.IsBlackHolePosition(newCell) && movementEvent == MovementEvent.Move;
             if(isBlackHole) {
                 return () => {
@@ -146,5 +140,14 @@ namespace PhotonInMaze.Game.Photon {
 
             return null;
         }
+
+        public Vector3 GetInitialPosition() {
+            return initialPosition;
+        }
+
+        public IMazeCell GetCurrentMazeCellPosition() {
+            return CurrentMazeCell;
+        }
+
     }
 }

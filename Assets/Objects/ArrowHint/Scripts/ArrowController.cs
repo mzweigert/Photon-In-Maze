@@ -1,24 +1,21 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.GameCamera;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Maze;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
+using PhotonInMaze.Provider;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace PhotonInMaze.Game.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState> {
+namespace PhotonInMaze.Arrow {
+    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
-        private LinkedListNode<MazeCell> currentCell;
+        private LinkedListNode<IMazeCell> currentCell;
         private Direction lastMove = Direction.Start, nextMove;
         private ArrowState currentState = ArrowState.Creating;
         private int sizeOfPath;
         private Animator animator;
-
-        private PhotonController photonScript;
-        private MazeController mazeScript;
 
         public override IInvoke OnLoop() {
             return GameFlowManager.Instance.Flow
@@ -27,14 +24,12 @@ namespace PhotonInMaze.Game.Arrow {
                .Build();
         }
 
-        public override void OnStart() {
-            mazeScript = MazeObjectsManager.Instance.GetMazeScript();
-            photonScript = ObjectsManager.Instance.GetPhotonScript();
-
-            currentCell = photonScript.LastNodeCellFromPathToGoal;
+        public override void OnInit() {
+      
+            currentCell = MazeObjectsProvider.Instance.GetPathToGoalManager().GetFirstFromPath();
 
             if(currentCell != null) {
-                sizeOfPath = (int)Math.Ceiling(currentCell.List.Count * 0.15f);
+                sizeOfPath = (int)Math.Ceiling(currentCell.List.Count * 0.20f);
                 sizeOfPath = sizeOfPath < 5 ? 5 : sizeOfPath;
                 NotifyCameraAboutResize(sizeOfPath);
                 InitArrowPosition();
@@ -47,7 +42,7 @@ namespace PhotonInMaze.Game.Arrow {
         private void InitArrowPosition() {
             currentCell = currentCell.Next;
             transform.position = new Vector3(currentCell.Value.X, 1f, currentCell.Value.Y);
-            MazeCell next = currentCell.Next?.Value;
+            IMazeCell next = currentCell.Next?.Value;
             if(next == null) {
                 transform.rotation = Quaternion.Euler(0f, -90f, 0f);
             }
@@ -58,9 +53,9 @@ namespace PhotonInMaze.Game.Arrow {
 
         private void NotifyCameraAboutResize(int sizeOfPath) {
 
-            LinkedListNode<MazeCell> iterateCell = currentCell.Next;
-            MazeCell photonPos = photonScript.CurrentMazeCell;
-            float offset = mazeScript.LenghtOfCellSide / 2;
+            LinkedListNode<IMazeCell> iterateCell = currentCell.Next;
+            IMazeCell photonPos = ObjectsProvider.Instance.GetPhotonController().GetCurrentMazeCellPosition();
+            float offset = MazeObjectsProvider.Instance.GetMazeController().LenghtOfCellSide / 2;
             Vector2 leftUpBound = new Vector2(iterateCell.Value.X - offset, iterateCell.Value.Y - offset);
             Vector2 rightDownBound = new Vector2(iterateCell.Value.X + offset, iterateCell.Value.Y + offset);
             Frame frame = new Frame(leftUpBound, rightDownBound);
@@ -74,14 +69,15 @@ namespace PhotonInMaze.Game.Arrow {
             frame.TryResizeX(photonPos.X, offset);
             frame.TryResizeY(photonPos.Y, offset);
 
-            ObjectsManager.Instance
-                .GetCameraScript()
+            ObjectsProvider.Instance
+                .GetCameraController()
                 .ResizeCameraTo(frame);
         }
 
         public override int GetInitOrder() {
             return InitOrder.Arrow;
         }
+
     }
 
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace PhotonInMaze.Game.CanvasGame.CountDown {
+namespace PhotonInMaze.CanvasGame.CountDown {
     public class CountdownController : FlowFixedUpdateBehaviour {
 
         private float elapsed;
@@ -12,7 +12,7 @@ namespace PhotonInMaze.Game.CanvasGame.CountDown {
         private AudioSource audioSource;
         private Text text;
 
-        public override void OnStart() {
+        public override void OnInit() {
             toStart = 3;
             elapsed = 0.5f;
             audioPlayed = false;

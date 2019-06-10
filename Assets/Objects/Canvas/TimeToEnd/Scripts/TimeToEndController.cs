@@ -2,13 +2,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PhotonInMaze.Game.CanvasGame.TimeToEnd {
+namespace PhotonInMaze.CanvasGame.TimeToEnd {
     public class TimeToEndController : FlowBehaviourSingleton<TimeToEndController> {
 
         public float TimeToEnd { get; private set; }
         string minutes, seconds;
 
-        public override void OnStart() {
+        public override void OnInit() {
             TimeToEnd = 120f;
         }
 

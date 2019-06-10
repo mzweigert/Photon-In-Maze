@@ -1,9 +1,10 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
 using UnityEngine;
 
-namespace PhotonInMaze.Game.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<PhotonController, PhotonState> {
+namespace PhotonInMaze.GameCamera {
+    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private void ChangeCameraView(float delta) {
             if(delta == 0f) {

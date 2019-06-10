@@ -6,9 +6,7 @@ namespace PhotonInMaze.Common.Flow {
 
         int GetInitOrder();
 
-        void OnStart();
-
-        IInvoke OnLoop();
+        void OnInit();
 
     }
 }

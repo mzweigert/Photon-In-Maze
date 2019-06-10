@@ -1,9 +1,11 @@
-﻿using PhotonInMaze.Common.Flow;
+﻿using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace PhotonInMaze.Game.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<PhotonState> {
+namespace PhotonInMaze.Photon {
+    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         private Vector2 fingerStart, fingerEnd;
         private bool canSwipe = true;

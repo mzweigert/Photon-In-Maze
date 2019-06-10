@@ -1,14 +1,11 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.GameCamera;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Maze;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
 using System;
 using UnityEngine;
 
-
-namespace PhotonInMaze.Game.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState> {
+namespace PhotonInMaze.Arrow {
+    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
         private void Move() {
 
@@ -26,7 +23,7 @@ namespace PhotonInMaze.Game.Arrow {
                     break;
                 case ArrowState.Moving:
                     Vector3 targetPosition = new Vector3(currentCell.Value.X, transform.position.y, currentCell.Value.Y);
-                    transform.position = Vector3.Lerp(transform.position, targetPosition, 0.15f);
+                    transform.position = Vector3.Lerp(transform.position, targetPosition, 0.25f);
                     if(Vector3.Distance(transform.position, targetPosition) > 0.1f) {
                         return;
                     }

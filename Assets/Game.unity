@@ -406,7 +406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.03137255, g: 1, b: 0.03137255, a: 1}
+  m_Color: {r: 0.019607844, g: 1, b: 0.019607844, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -597,6 +597,8 @@ GameObject:
   m_Component:
   - component: {fileID: 949568339}
   - component: {fileID: 949568340}
+  - component: {fileID: 949568342}
+  - component: {fileID: 949568341}
   m_Layer: 0
   m_Name: Maze
   m_TagString: Untagged
@@ -630,11 +632,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dbd480039f60a344bdc0ff90b9d70b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rows: 20
+  _columns: 20
+--- !u!114 &949568341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949568338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca9e1dd4889116449b197a54adf7b931, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   Algorithm: 1
-  FullRandom: 1
-  RandomSeed: 9
-  _rows: 5
-  _columns: 5
+--- !u!114 &949568342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949568338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ded39a045f123443be93764b1468669, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1171714676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -898,7 +922,7 @@ GameObject:
   - component: {fileID: 1210011200}
   - component: {fileID: 1210011199}
   m_Layer: 0
-  m_Name: ObjectsManager
+  m_Name: ObjectsProvider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -916,9 +940,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b506809788d694ca52196cb98fce94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _initialArrowHintsCount: 5
   areaCamera: {fileID: 1346720326}
-  areaLight: {fileID: 0}
+  areaLight: {fileID: 2144415892}
   photon: {fileID: 335813630}
   arrow: {fileID: 2649734575190821100, guid: bfe871e96e6075042a20994701846427, type: 3}
 --- !u!4 &1210011198
@@ -949,6 +972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 1893983970}
   backgroundPanel: {fileID: 608440830}
+  arrowButton: {fileID: 1495974861}
 --- !u!114 &1210011200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1026,6 +1050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb14ab23889b4644833c43d3bfc04e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _initialArrowHintsCount: 5
 --- !u!114 &1495974864
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,12 +1,11 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Maze;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
+using PhotonInMaze.Provider;
 using UnityEngine;
 
-
-namespace PhotonInMaze.Game.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<PhotonController, PhotonState> {
+namespace PhotonInMaze.GameCamera {
+    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private enum CameraType {
             Area,
@@ -15,7 +14,7 @@ namespace PhotonInMaze.Game.GameCamera {
         }
 
         private CameraEventManager cameraEventManager = new CameraEventManager();
-        private MazeController mazeScript;
+        private IMazeController mazeScript;
         private new Camera camera;
         private bool followThePhoton;
         private CameraType type;
@@ -32,7 +31,7 @@ namespace PhotonInMaze.Game.GameCamera {
                       offsetCam = 3.5f,
                       deltaMagnitudeMultiplier = 0.01f;
 
-        public override void OnNext(PhotonState state) {
+        public override void OnNext(IPhotonState state) {
             if(state.RealPosition.Equals(currentPhotonPosition)) {
                 return;
             }
@@ -53,9 +52,9 @@ namespace PhotonInMaze.Game.GameCamera {
             }
         }
 
-        public override void OnStart() {
+        public override void OnInit() {
             camera = GetComponent<Camera>();
-            mazeScript = MazeObjectsManager.Instance.GetMazeScript();
+            mazeScript = MazeObjectsProvider.Instance.GetMazeController();
             float x = 0f, z = 0f, ratio = (float)Screen.width / Screen.height;
             x = (mazeScript.Columns * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
             z = (mazeScript.Rows * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
@@ -69,7 +68,7 @@ namespace PhotonInMaze.Game.GameCamera {
             camera.fieldOfView = CalculateFOV(initialOrtographicSize, initialCamPosition.y);
             camera.orthographic = true;
             type = CameraType.Area;
-            currentPhotonPosition = previousPhotonPosition = ObjectsManager.Instance.GetPhotonScript().InitialPosition;
+            currentPhotonPosition = previousPhotonPosition = ObjectsProvider.Instance.GetPhotonController().GetInitialPosition();
             followThePhoton = false;
             animator = transform.GetComponent<Animator>();
         }
@@ -87,7 +86,7 @@ namespace PhotonInMaze.Game.GameCamera {
             } else if(cameraEventManager.CanLoadNextEvent()) {
                 cameraEventManager.TryLoadNext();
             } else if(Input.touchCount == 2 || Input.mouseScrollDelta.y != 0 &&
-                      !ObjectsManager.Instance.IsArrowPresent()) {
+                      !CanvasObjectsProvider.Instance.GetArrowButtonController().IsArrowPresent()) {
 
 #if UNITY_EDITOR
                 float deltaMagnitudeDiff = -Input.mouseScrollDelta.y * 20;

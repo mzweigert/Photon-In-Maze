@@ -3,6 +3,8 @@ namespace PhotonInMaze.Common.Flow {
     public enum State {
         Start,
         GenerateMaze,
+        GeneratePathToGoal,
+        CreateMaze,
         MazeCreated,
         TurnOnLight,
         ShowPhoton,

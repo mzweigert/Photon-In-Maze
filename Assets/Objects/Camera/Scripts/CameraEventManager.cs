@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace PhotonInMaze.Game.GameCamera {
+namespace PhotonInMaze.GameCamera {
     public class CameraEventManager {
 
         private Queue<ICameraEvent> events = new Queue<ICameraEvent>();

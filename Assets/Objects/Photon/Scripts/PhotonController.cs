@@ -1,27 +1,32 @@
-﻿using System;
+﻿using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Maze;
+using PhotonInMaze.Common.Model;
+using PhotonInMaze.Provider;
 using UnityEngine;
 
-namespace PhotonInMaze.Game.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<PhotonState> {
+namespace PhotonInMaze.Photon {
+    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
-        private MazeController mazeController;
+        private IMazeController mazeController;
+        private IPathToGoalManager pathToGoalManager;
+        private IMazeCellManager mazeCellManager;
+
         private PhotonState photonState;
 
         private Animator animator;
-        public Vector3 InitialPosition { get; } = new Vector3(0, 2, 0);
+        private Vector3 initialPosition { get; } = new Vector3(0, 2, 0);
 
         [Range(0.1f, 2f)]
         public float PhotonSpeed;
 
-        protected override PhotonState GetData() {
+        protected override IPhotonState GetData() {
             return photonState;
         }
 
-        public override void OnStart() {
-            mazeController = MazeObjectsManager.Instance.GetMazeScript();
+        public override void OnInit() {
+            mazeController = MazeObjectsProvider.Instance.GetMazeController();
+            pathToGoalManager = MazeObjectsProvider.Instance.GetPathToGoalManager();
+            mazeCellManager = MazeObjectsProvider.Instance.GetMazeCellManager();
             animator = GetComponent<Animator>();
         }
 
@@ -67,15 +72,14 @@ namespace PhotonInMaze.Game.Photon {
         }
 
         private void InitPhotonPosition() {
-            LastNodeCellFromPathToGoal = mazeController.PathsToGoal.First;
-            currentTargetMazeCell = new TargetMazeCell(LastNodeCellFromPathToGoal.Value, MovementEvent.Idle);
+            currentTargetMazeCell = new TargetMazeCell(mazeCellManager.GetStartCell(), MovementEvent.Idle);
             lastSaved = currentTargetMazeCell.value;
-            transform.position = InitialPosition;
-            photonState = new PhotonState(InitialPosition);
+            transform.position = initialPosition;
+            photonState = new PhotonState(initialPosition);
         }
 
         private void WaitForMove() {
-            if(ObjectsManager.Instance.IsArrowPresent()) {
+            if(CanvasObjectsProvider.Instance.GetArrowButtonController().IsArrowPresent()) {
                 return;
             }
             TryMakeMove();
@@ -89,5 +93,6 @@ namespace PhotonInMaze.Game.Photon {
         public override int GetInitOrder() {
             return InitOrder.Photon;
         }
+
     }
 }

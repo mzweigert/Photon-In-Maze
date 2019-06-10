@@ -1,12 +1,9 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.GameCamera;
-using PhotonInMaze.Game.Manager;
-using PhotonInMaze.Game.Maze;
-using PhotonInMaze.Game.Photon;
-using System;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
 
-namespace PhotonInMaze.Game.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState> {
+namespace PhotonInMaze.Arrow {
+    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
         private void PrepareToDestroy() {
             if(currentCell == null || sizeOfPath == 0) {

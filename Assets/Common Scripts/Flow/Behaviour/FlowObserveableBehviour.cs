@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhotonInMaze.Common.Observer;
+using System;
 using System.Collections.Generic;
 
 namespace PhotonInMaze.Common.Flow {

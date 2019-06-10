@@ -16,6 +16,12 @@ namespace PhotonInMaze.Common.Flow {
                     CurrentState = State.GenerateMaze;
                     break;
                 case State.GenerateMaze:
+                    CurrentState = State.GeneratePathToGoal;
+                    break;
+                case State.GeneratePathToGoal:
+                    CurrentState = State.CreateMaze;
+                    break;
+                case State.CreateMaze:
                     CurrentState = State.MazeCreated;
                     break;
                 case State.MazeCreated:
