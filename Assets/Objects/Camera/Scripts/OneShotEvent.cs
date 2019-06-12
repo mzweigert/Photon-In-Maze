@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace PhotonInMaze.Game.GameCamera {
+namespace PhotonInMaze.GameCamera {
     public class OneShotEvent : ICameraEvent {
 
         private bool isDone = false;

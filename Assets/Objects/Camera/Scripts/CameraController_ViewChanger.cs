@@ -1,9 +1,10 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Photon;
+﻿using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
 using UnityEngine;
 
-namespace PhotonInMaze.Game.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<PhotonController, PhotonState> {
+namespace PhotonInMaze.GameCamera {
+    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private void ChangeCameraView(float delta) {
             if(delta == 0f) {
@@ -14,15 +15,15 @@ namespace PhotonInMaze.Game.GameCamera {
                 cameraEvent = OneShotEvent.Of(() => {
                     Vector3 abovePhoton = new Vector3(currentPhotonPosition.x, currentPhotonPosition.y + 8f, currentPhotonPosition.z);
                     float speed = delta * -deltaMagnitudeMultiplier;
-                    ChangeCameraPosition(speed, abovePhoton);
-                    camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, abovePhoton.y, speed);
+                    LerpCameraPosition(speed, abovePhoton);
+                    LerpCameraOrtographicSize(speed, abovePhoton.y);
                     type = TryChangeCameraViewType() ? CameraType.AbovePhoton : CameraType.Area;
                 });
             } else {
                 cameraEvent = OneShotEvent.Of(() => {
                     float speed = delta * deltaMagnitudeMultiplier;
-                    ChangeCameraPosition(speed, initialCamPosition);
-                    camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, initialOrtographicSize, speed);
+                    LerpCameraPosition(speed, initialCamPosition);
+                    LerpCameraOrtographicSize(speed, initialOrtographicSize);
                     type = TryChangeCameraViewType() ? CameraType.AbovePhoton : CameraType.Area;
                 });
             }
@@ -31,13 +32,22 @@ namespace PhotonInMaze.Game.GameCamera {
 
         private bool BackAbovePhoton() {
             Vector3 targetCamPosition = new Vector3(currentPhotonPosition.x, camera.transform.position.y, currentPhotonPosition.z);
-            return ChangeCameraPosition(cameraSpeed * 2, targetCamPosition);
+            return LerpCameraPosition(cameraSpeed * 2, targetCamPosition);
         }
 
-        private bool ChangeCameraPosition(float speed, Vector3 targetPos) {
+        private bool LerpCameraPosition(float speed, Vector3 targetPos) {
             camera.transform.position = Vector3.Lerp(camera.transform.position, targetPos, speed);
             if(Vector3.Distance(camera.transform.position, targetPos) <= 0.1f) {
                 camera.transform.position = targetPos;
+                return true;
+            }
+            return false;
+        }
+
+        private bool LerpCameraOrtographicSize(float speed, float targetOrtographicSize) {
+            camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, targetOrtographicSize, speed);
+            if(Mathf.Abs(camera.orthographicSize - targetOrtographicSize) <= 0.1f) {
+                camera.orthographicSize = targetOrtographicSize;
                 return true;
             }
             return false;
@@ -57,14 +67,16 @@ namespace PhotonInMaze.Game.GameCamera {
                             (frame.GetYDistance() / 2) / camera.aspect;
 
             ICameraEvent cameraEvent = RepeatedEvent.Of(() => {
-                bool done = ChangeCameraPosition(cameraSpeed, targetCamPosition);
+                bool changeCameraPositionDone = LerpCameraPosition(cameraSpeed, targetCamPosition);
+                bool lerpCameraOrtographicSizeDone = false;
                 if(camera.orthographic) {
-                    camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, ortSize, cameraSpeed);
+                    lerpCameraOrtographicSizeDone = LerpCameraOrtographicSize(cameraSpeed, ortSize);
                 } else {
                     TryChangeCameraViewType(ortographicSize: ortSize);
+                    lerpCameraOrtographicSizeDone = true;
                 }
                 type = CameraType.BetweenPhotonAndArrow;
-                return done;
+                return changeCameraPositionDone && lerpCameraOrtographicSizeDone;
             });
             cameraEventManager.Add(cameraEvent);
         }

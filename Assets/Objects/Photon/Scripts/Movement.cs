@@ -1,5 +1,5 @@
 ﻿
-namespace PhotonInMaze.Game.Photon {
+namespace PhotonInMaze.Photon {
     public enum TouchMovement {
         Left,
         Right,

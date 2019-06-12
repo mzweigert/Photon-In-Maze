@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace PhotonInMaze.Common.Flow {
+namespace PhotonInMaze.Common.Observer {
     internal class Unsubscriber<DataType> : IDisposable {
 
         private HashSet<IObserver<DataType>> _observers;

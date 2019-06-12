@@ -1,12 +1,14 @@
-﻿using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Maze;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Common.Model;
 using PhotonInMaze.Particles;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PhotonInMaze.Game.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<PhotonState> {
+namespace PhotonInMaze.Photon {
+    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         [SerializeField]
         private Transform leakedLightContainer;
@@ -26,7 +28,7 @@ namespace PhotonInMaze.Game.Photon {
                 blackHolesToLeakedLights.Add(GetKey(other), particleLightInstance);
             } else if(other.name.Equals("_TeleportArea")) {
                 HandeOnTriggerExitBlackHole(GetKey(other));
-                MazeCell target = mazeController.Wormholes[other.transform.parent.GetInstanceID()];
+                IMazeCell target = mazeController.GetWormholeExit(other.transform.parent.GetInstanceID());
                 PushToQueueMoves(target.Row, target.Column, MovementEvent.Teleport);
                 Vector2Int nextMove = target.GetPossibleMovesCoords().First();
                 PushToQueueMoves(nextMove.x, nextMove.y, MovementEvent.Move);

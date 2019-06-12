@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PhotonInMaze.Common.Flow {
+namespace PhotonInMaze.Common.Observer {
     public abstract class MonoObserver<Controller, DataType> : MonoBehaviour, IObserver<DataType>
     where Controller : MonoObserveable<DataType> {
 

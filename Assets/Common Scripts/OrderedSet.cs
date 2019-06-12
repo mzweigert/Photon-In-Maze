@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PhotonInMaze.Common {
@@ -26,7 +27,7 @@ namespace PhotonInMaze.Common {
         public LinkedListNode<T> First { get { return linkedList.First; } }
 
         void ICollection<T>.Add(T item) {
-            Add(item);
+            AddLast(item);
         }
 
         public LinkedListNode<T> Find(T item) {
@@ -65,6 +66,31 @@ namespace PhotonInMaze.Common {
             return true;
         }
 
+        public bool RemoveAllBackwards(T item) {
+            LinkedListNode<T> node = Find(item);
+            if(node == null) {
+                return false;
+            }
+            while(!First.Equals(node)) {
+                RemoveFirst();
+            }
+            return true;
+        }
+
+        public bool RemoveFirst() {
+            if(First == null) {
+                return false;
+            }
+            bool found = dictionary.TryGetValue(First.Value, out LinkedListNode<T> node);
+            if(!found) {
+                return false;
+            }
+            dictionary.Remove(First.Value);
+            linkedList.RemoveFirst();
+            return true;
+        }
+
+
         public IEnumerator<T> GetEnumerator() {
             return linkedList.GetEnumerator();
         }
@@ -81,11 +107,19 @@ namespace PhotonInMaze.Common {
             linkedList.CopyTo(array, arrayIndex);
         }
 
-        public bool Add(T item) {
+        public bool AddLast(T item) {
             if(dictionary.ContainsKey(item)) return false;
             LinkedListNode<T> node = linkedList.AddLast(item);
             dictionary.Add(item, node);
             return true;
         }
+
+        public bool AddFirst(T item) {
+            if(dictionary.ContainsKey(item)) return false;
+            LinkedListNode<T> node = linkedList.AddFirst(item);
+            dictionary.Add(item, node);
+            return true;
+        }
+
     }
 }

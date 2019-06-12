@@ -1,6 +1,6 @@
 ﻿
 namespace PhotonInMaze.Common.Flow {
-    public abstract class FlowBehaviourSingleton<T> : FlowBehaviour where T : UnityEngine.Object {
+    public abstract class FlowBehaviourSingleton<T> : FlowUpdateBehaviour where T : UnityEngine.Object {
         private static T _instance;
 
         public static T Instance {
