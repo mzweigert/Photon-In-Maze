@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using PhotonInMaze.Common;
 using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Game.Manager;
+using PhotonInMaze.Provider;
+using PhotonInMaze.Common.Controller;
+using PhotonInMaze.Common.Model;
 
-namespace PhotonInMaze.Game.Maze {
-    public partial class MazeController : FlowBehaviour {
+namespace PhotonInMaze.Maze {
+    public partial class MazeController : FlowUpdateBehaviour, IMazeController {
 
-        public Dictionary<int, MazeCell> Wormholes { get; private set; } = new Dictionary<int, MazeCell>();
-        public HashSet<MazeCell> BlackHolesPositions { get; private set; } = new HashSet<MazeCell>();
-        public HashSet<MazeCell> WhiteHolesPositions { get; private set; } = new HashSet<MazeCell>();
+        public Dictionary<int, IMazeCell> Wormholes { get; private set; } = new Dictionary<int, IMazeCell>();
+        public HashSet<IMazeCell> BlackHolesPositions { get; private set; }
+        public HashSet<IMazeCell> WhiteHolesPositions { get; private set; }
 
         private enum HoleType {
             Black, White
         }
 
-        private Optional<GameObject> CreateHole(HoleType type, MazeCell cell, Transform cellGameObject, ref byte counter) {
+        private Optional<GameObject> CreateHole(HoleType type, IMazeCell cell, Transform cellGameObject, ref byte counter) {
             if(cell.Walls.Count < 3) {
                 return Optional<GameObject>.Empty();
             }
@@ -24,11 +26,11 @@ namespace PhotonInMaze.Game.Maze {
             counter++;
             if(!cell.IsStartCell() && !cell.IsGoal && counter == 10) {
                 if(type == HoleType.Black) {
-                    GameObject blackHolePrototype = ObjectsManager.Instance.GetBlackHole();
+                    GameObject blackHolePrototype = MazeObjectsProvider.Instance.GetBlackHole();
                     hole = Instantiate(blackHolePrototype, cellGameObject);
                     hole.name = string.Format("BlackHole_{0}_{1}", cell.Row, cell.Column);
                 } else if(type == HoleType.White) {
-                    GameObject whiteHolePrefab = ObjectsManager.Instance.GetWhiteHole();
+                    GameObject whiteHolePrefab = MazeObjectsProvider.Instance.GetWhiteHole();
                     hole = Instantiate(whiteHolePrefab, cellGameObject);
                     hole.name = string.Format("WhiteHole_{0}_{1}", cell.Row, cell.Column);
                 }
@@ -42,18 +44,19 @@ namespace PhotonInMaze.Game.Maze {
             return Optional<GameObject>.OfNullable(hole);
         }
 
-        private Dictionary<int, MazeCell> CreateWormholes(List<ObjectMazeCell> blackholes, List<ObjectMazeCell> whiteholes) {
+        private Dictionary<int, IMazeCell> CreateWormholes(List<ObjectMazeCell> blackholes, List<ObjectMazeCell> whiteholes) {
             int length;
             length = CalculateSizeOfWormholes(blackholes, whiteholes);
 
             System.Random random = new System.Random();
-            Dictionary<int, MazeCell> wormholes = new Dictionary<int, MazeCell>();
+            Dictionary<int, IMazeCell> wormholes = new Dictionary<int, IMazeCell>();
             blackholes = blackholes.GetRange(0, length).OrderBy(x => random.Next()).ToList();
             whiteholes = whiteholes.GetRange(0, length).OrderBy(x => random.Next()).ToList();
-
+            BlackHolesPositions = new HashSet<IMazeCell>();
+            WhiteHolesPositions = new HashSet<IMazeCell>();
             for(int i = 0; i < length; i++) {
                 int blackHoleId = blackholes[i].gameObject.transform.GetInstanceID();
-                MazeCell whiteHoleCell = whiteholes[i].cell;
+                IMazeCell whiteHoleCell = whiteholes[i].cell;
                 wormholes.Add(blackHoleId, whiteHoleCell);
                 WhiteHolesPositions.Add(whiteHoleCell);
                 BlackHolesPositions.Add(blackholes[i].cell);
@@ -77,12 +80,16 @@ namespace PhotonInMaze.Game.Maze {
             return length;
         }
 
-        internal bool IsWhiteHolePosition(MazeCell newCell) {
+        public bool IsWhiteHolePosition(IMazeCell newCell) {
             return WhiteHolesPositions.Contains(newCell);
         }
 
-        internal bool IsBlackHolePosition(MazeCell newCell) {
+        public bool IsBlackHolePosition(IMazeCell newCell) {
             return BlackHolesPositions.Contains(newCell);
+        }
+
+        public IMazeCell GetWormholeExit(int blackHoleId) {
+            return Wormholes[blackHoleId];
         }
 
     }

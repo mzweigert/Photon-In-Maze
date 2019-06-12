@@ -1,24 +1,19 @@
-﻿using System;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Model;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace PhotonInMaze.Game.Maze {
-    public enum Direction {
-        Start,
-        Right,
-        Front,
-        Left,
-        Back,
-    };
+namespace PhotonInMaze.Maze {
+
     //<summary>
     //Class for representing concrete maze cell.
     //</summary>
-    public class MazeCell {
+    internal class MazeCell : IMazeCell {
 
-        public HashSet<Direction> Walls { get; internal set; } = new HashSet<Direction>();
-        public bool IsVisited { get; internal set; } = false;
-        public bool IsPathToGoal { get; internal set; } = false;
+        public HashSet<Direction> Walls { get; } = new HashSet<Direction>();
+        public bool IsProperPathToGoal { get; internal set; } = false;
         public bool IsGoal { get; internal set; } = false;
         public bool IsTrap { get; internal set; } = false;
 
@@ -48,7 +43,7 @@ namespace PhotonInMaze.Game.Maze {
             return hashCode;
         }
 
-        internal Direction GetDirectionTo(MazeCell next) {
+        public Direction GetDirectionTo(IMazeCell next) {
             if(next == null) {
                 return Direction.Start;
             } else if(Row < next.Row) {
@@ -67,7 +62,7 @@ namespace PhotonInMaze.Game.Maze {
             return new Vector2(X, Y);
         }
 
-        internal HashSet<Direction> GetPossibleMovesDirection() {
+        public HashSet<Direction> GetPossibleMovesDirection() {
             HashSet<Direction> availableMoves = new HashSet<Direction>();
             Array allDirections = System.Enum.GetValues(typeof(Direction));
             foreach(Direction direction in allDirections) {
@@ -78,7 +73,7 @@ namespace PhotonInMaze.Game.Maze {
             return availableMoves;
         }
 
-        internal HashSet<Vector2Int> GetPossibleMovesCoords() {
+        public HashSet<Vector2Int> GetPossibleMovesCoords() {
             HashSet<Vector2Int> availableMoves = new HashSet<Vector2Int>();
             Array allDirections = System.Enum.GetValues(typeof(Direction));
             foreach(Direction direction in allDirections) {
@@ -105,7 +100,7 @@ namespace PhotonInMaze.Game.Maze {
             return new Vector2Int(Row, Column);
         }
 
-        internal bool IsStartCell() {
+        public bool IsStartCell() {
             return Column == 0 && Row == 0;
         }
 

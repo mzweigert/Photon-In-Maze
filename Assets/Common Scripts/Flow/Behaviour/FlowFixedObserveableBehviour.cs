@@ -1,8 +1,9 @@
-﻿using System;
+﻿using PhotonInMaze.Common.Observer;
+using System;
 using System.Collections.Generic;
 
 namespace PhotonInMaze.Common.Flow {
-    public abstract class FlowFixedObserveableBehviour<DataType> : FlowFixedBehaviour, IObservable<DataType> {
+    public abstract class FlowFixedObserveableBehviour<DataType> : FlowFixedUpdateBehaviour, IObservable<DataType> {
 
         private HashSet<IObserver<DataType>> observers = new HashSet<IObserver<DataType>>();
 

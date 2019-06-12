@@ -2,12 +2,20 @@
 namespace PhotonInMaze.Common.Flow {
     public enum State {
         Start,
+        GenerateMaze,
+        GeneratePathToGoal,
+        CreateMaze,
+        MazeCreated,
+        TurnOnLight,
+        ShowPhoton,
         CountingDown,
         DestroyPathToGoal,
-        TurnOffLight,
+        DimAreaLight,
         TurnOnPhotonLight,
         GameRunning,
         EndGame,
+        HidePhoton,
+        TurnOffLight,
         Pause
     }
 }

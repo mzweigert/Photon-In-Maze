@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PhotonInMaze.Game.GameCamera {
+namespace PhotonInMaze.GameCamera {
     public class RepeatedEvent : ICameraEvent {
 
         private bool isDone = false;
