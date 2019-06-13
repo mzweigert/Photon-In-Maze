@@ -34,6 +34,7 @@ namespace PhotonInMaze.CanvasGame.Arrow {
         public void ReinitializeArrowHintsCount() {
             if(GameFlowManager.Instance.Flow.Is(State.EndGame)) {
                 ArrowHintsCount = Debug.isDebugBuild ? debugArrowHintsCount : _initialArrowHintsCount;
+                arrowObserver.RemoveArrow();
             }
         }
 

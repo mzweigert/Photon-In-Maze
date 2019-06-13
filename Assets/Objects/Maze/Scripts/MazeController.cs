@@ -1,5 +1,7 @@
-﻿using PhotonInMaze.Common.Controller;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Flow;
+using PhotonInMaze.Maze.Generator;
 using PhotonInMaze.Provider;
 using UnityEngine;
 
@@ -8,13 +10,11 @@ using UnityEngine;
 //</summary>
 
 namespace PhotonInMaze.Maze {
-    public enum MazeGenerationAlgorithm {
-        PureRecursive,
-        RandomTree,
-        Division
-    }
 
     public partial class MazeController : FlowUpdateBehaviour, IMazeController {
+
+        [SerializeField]
+        internal MazeGenerationAlgorithm Algorithm = MazeGenerationAlgorithm.PureRecursive;
 
         [Range(5, 50)]
         [SerializeField]
@@ -32,7 +32,8 @@ namespace PhotonInMaze.Maze {
 
         public float ScaleOfCellSide { get { return LenghtOfCellSide / 4f; } }
         public float LenghtOfCellSide { get { return 4f; } }
-      
+
+        private BasicMazeGenerator generator = null;
 
         public override void OnInit() {
           
@@ -55,6 +56,12 @@ namespace PhotonInMaze.Maze {
                     CreateMazeWithItems();
                     GameFlowManager.Instance.Flow.NextState();
                 })
+                .OrElseWhen(State.GenerateMaze)
+                .Then(() => {
+                    generator = InitGenerator(_rows, _columns);
+                    generator.GenerateMaze();
+                    GameFlowManager.Instance.Flow.NextState();
+                })
                 .OrElseWhen(State.MazeCreated)
                 .Then(() => StartCoroutine(GameFlowManager.Instance.Flow.ChangeStateAfterFrameEnd()))
                 .OrElseWhen(State.DestroyPathToGoal)
@@ -67,6 +74,22 @@ namespace PhotonInMaze.Maze {
                 .OrElseWhen(State.EndGame)
                 .Then(NextStage)
                 .Build();
+        }
+
+        public override int GetInitOrder() {
+            return InitOrder.Maze;
+        }
+
+        private BasicMazeGenerator InitGenerator(int rows, int columns) {
+            switch(Algorithm) {
+                case MazeGenerationAlgorithm.RandomTree:
+                    return new RandomTreeMazeGenerator(rows, columns, LenghtOfCellSide);
+                case MazeGenerationAlgorithm.Division:
+                    return new DivisionMazeGenerator(rows, columns, LenghtOfCellSide);
+                case MazeGenerationAlgorithm.PureRecursive:
+                default:
+                    return new RecursiveMazeGenerator(rows, columns, LenghtOfCellSide);
+            }
         }
 
         private void NextStage() {
@@ -83,8 +106,14 @@ namespace PhotonInMaze.Maze {
             }
         }
 
-        public override int GetInitOrder() {
-            return InitOrder.Maze;
+        public void Recreate(int rows, int columns, MazeGenerationAlgorithm algorithm) {
+            stage = 0;
+            _rows = rows - 1;
+            _columns = columns - 1;
+            Algorithm = algorithm;
+            while(!GameFlowManager.Instance.Flow.Is(State.HidePhoton)) {
+                GameFlowManager.Instance.Flow.NextState();
+            }
         }
     }
 }

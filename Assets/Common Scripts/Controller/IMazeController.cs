@@ -11,6 +11,6 @@ namespace PhotonInMaze.Common.Controller {
         bool IsBlackHolePosition(IMazeCell newCell);
 
         IMazeCell GetWormholeExit(int blackHoleId);
-
+        void Recreate(int rows, int columns, MazeGenerationAlgorithm algorithm);
     }
 }
