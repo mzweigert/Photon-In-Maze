@@ -4,6 +4,7 @@ using System;
 using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Model;
+using PhotonInMaze.Common;
 
 namespace PhotonInMaze.Photon {
     public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {

@@ -1,21 +1,17 @@
 ﻿using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Common.Model;
-using PhotonInMaze.Maze.Generator;
 using PhotonInMaze.Provider;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PhotonInMaze.Maze {
-    public class MazeCellManager : FlowUpdateBehaviour, IMazeCellManager {
+    public class MazeCellManager : FlowBehaviour, IMazeCellManager {
 
-        [SerializeField]
-        private MazeGenerationAlgorithm Algorithm = MazeGenerationAlgorithm.PureRecursive;
 
         private IMazeCell[,] maze;
         private int rows, columns;
         float cellLengthSide;
-        private BasicMazeGenerator generator = null;
 
         public override void OnInit() {
             IMazeController mazeController = MazeObjectsProvider.Instance.GetMazeController();
@@ -30,33 +26,10 @@ namespace PhotonInMaze.Maze {
                     maze[row, column] = cell;
                 }
             }
-            generator = InitGenerator(rows, columns);
-        }
-
-        public override IInvoke OnLoop() {
-            return GameFlowManager.Instance.Flow
-                .When(State.GenerateMaze)
-                .Then(() => {
-                    generator.GenerateMaze();
-                    GameFlowManager.Instance.Flow.NextState();
-                })
-                .Build();
         }
 
         public override int GetInitOrder() {
             return InitOrder.MazeCellManager;
-        }
-
-        private BasicMazeGenerator InitGenerator(int rows, int columns) {
-            switch(Algorithm) {
-                case MazeGenerationAlgorithm.RandomTree:
-                    return new RandomTreeMazeGenerator(rows, columns, cellLengthSide);
-                case MazeGenerationAlgorithm.Division:
-                    return new DivisionMazeGenerator(rows, columns, cellLengthSide);
-                case MazeGenerationAlgorithm.PureRecursive:
-                default:
-                    return new RecursiveMazeGenerator(rows, columns, cellLengthSide);
-            }
         }
 
         public bool IsATrap(HashSet<IMazeCell> visitedCells, IMazeCell currentCell) {

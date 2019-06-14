@@ -1,4 +1,5 @@
-﻿using PhotonInMaze.Common.Model;
+﻿using PhotonInMaze.Common;
+using PhotonInMaze.Common.Model;
 using System.Collections.Generic;
 using UnityEngine;
 
