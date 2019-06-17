@@ -10,9 +10,6 @@ namespace PhotonInMaze.Maze {
         [SerializeField]
         private Material pathLine, pathCurve, pathEnd;
 
-        [SerializeField]
-        private GameObject endHole;
-
         internal Dictionary<IMazeCell, GameObject> pathToGoalFloors { get; private set; }
 
         private struct FloorState {
@@ -42,12 +39,6 @@ namespace PhotonInMaze.Maze {
                 }
                 currentFloor.transform.rotation = Quaternion.Euler(0f, floorState.yRotation, 0f);
                 renderer.material = floorState.material;
-                if(current.Value.IsGoal) {
-                    GameObject goal = Instantiate(endHole, currentFloor.transform.parent);
-                    Vector3 pos = goal.transform.position;
-                    pos.y = currentFloor.transform.position.y  + 0.25f;
-                    goal.transform.position = pos;
-                }
                 current = next;
             }
             GameFlowManager.Instance.Flow.NextState();
