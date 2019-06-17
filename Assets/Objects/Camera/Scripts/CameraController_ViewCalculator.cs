@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 
 namespace PhotonInMaze.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
+    internal partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private float CalculatePinchTouch() {
             if(Input.touchCount < 2) {
@@ -69,7 +69,7 @@ namespace PhotonInMaze.GameCamera {
         }
 
         private bool IsPhotonVisibleOnCamera(Vector3 currentPhotonPosition) {
-            Frame frame = new Frame(currentPhotonPosition, mazeScript.LenghtOfCellSide / 2);
+            Frame frame = new Frame(currentPhotonPosition, mazeConfiguration.LenghtOfCellSide / 2);
             return frame.IsFrameBoundsVisibleOnCamera(camera);
         }
     }

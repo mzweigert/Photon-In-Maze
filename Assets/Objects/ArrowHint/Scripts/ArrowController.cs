@@ -9,7 +9,7 @@ using UnityEngine;
 
 
 namespace PhotonInMaze.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
+    internal partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
         private LinkedListNode<IMazeCell> currentCell;
         private Direction lastMove = Direction.Start, nextMove;
@@ -55,7 +55,7 @@ namespace PhotonInMaze.Arrow {
 
             LinkedListNode<IMazeCell> iterateCell = currentCell.Next;
             IMazeCell photonPos = ObjectsProvider.Instance.GetPhotonController().GetCurrentMazeCellPosition();
-            float offset = MazeObjectsProvider.Instance.GetMazeController().LenghtOfCellSide / 2;
+            float offset = MazeObjectsProvider.Instance.GetMazeConfiguration().LenghtOfCellSide / 2;
             Vector2 leftUpBound = new Vector2(iterateCell.Value.X - offset, iterateCell.Value.Y - offset);
             Vector2 rightDownBound = new Vector2(iterateCell.Value.X + offset, iterateCell.Value.Y + offset);
             Frame frame = new Frame(leftUpBound, rightDownBound);

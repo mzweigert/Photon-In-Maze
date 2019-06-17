@@ -7,7 +7,7 @@ using PhotonInMaze.Common.Model;
 using PhotonInMaze.Common;
 
 namespace PhotonInMaze.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         private Queue<TargetMazeCell> movementsToMake = new Queue<TargetMazeCell>();
 

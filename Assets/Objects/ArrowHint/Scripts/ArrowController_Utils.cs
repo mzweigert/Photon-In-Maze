@@ -3,7 +3,7 @@ using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Flow;
 
 namespace PhotonInMaze.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
+    internal partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
         private void PrepareToDestroy() {
             if(currentCell == null || sizeOfPath == 0) {

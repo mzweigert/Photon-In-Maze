@@ -7,7 +7,7 @@ namespace PhotonInMaze.Maze.Generator {
     //Maze generation by dividing area in two, adding spaces in walls and repeating recursively.
     //Non-recursive realisation of algorithm.
     //</summary>
-    public class DivisionMazeGenerator : BasicMazeGenerator {
+    internal class DivisionMazeGenerator : BasicMazeGenerator {
 
         public DivisionMazeGenerator(int row, int column, float cellLengthSide) : base(row, column, cellLengthSide) {
 

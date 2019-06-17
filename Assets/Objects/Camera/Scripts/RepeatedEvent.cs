@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace PhotonInMaze.GameCamera {
-    public class RepeatedEvent : ICameraEvent {
+    internal class RepeatedEvent : ICameraEvent {
 
         private bool isDone = false;
         private readonly Func<bool> camEvent;

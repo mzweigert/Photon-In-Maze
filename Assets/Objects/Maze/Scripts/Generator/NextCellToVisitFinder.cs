@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace PhotonInMaze.Maze.Generator {
-    public class NextCellToVisitFinder {
+    internal class NextCellToVisitFinder {
 
         private int rows, columns;
 

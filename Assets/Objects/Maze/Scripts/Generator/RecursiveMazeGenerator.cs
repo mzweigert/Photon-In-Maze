@@ -8,7 +8,7 @@ namespace PhotonInMaze.Maze.Generator {
     //Pure recursive maze generation.
     //Use carefully for large mazes.
     //</summary>
-    public class RecursiveMazeGenerator : BasicMazeGenerator {
+    internal class RecursiveMazeGenerator : BasicMazeGenerator {
 
         private bool isInRange = false;
 

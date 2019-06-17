@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace PhotonInMaze.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         [SerializeField]
         private Transform leakedLightContainer;

@@ -2,7 +2,7 @@
 
 
 namespace PhotonInMaze.GameCamera {
-    public class OneShotEvent : ICameraEvent {
+    internal class OneShotEvent : ICameraEvent {
 
         private bool isDone = false;
         private readonly Action camEvent;

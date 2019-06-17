@@ -7,7 +7,7 @@ namespace PhotonInMaze.Maze.Generator {
     //Basic class for Tree generation logic.
     //Subclasses moust override GetCellInRange to implement selecting strategy.
     //</summary>
-    public class RandomTreeMazeGenerator : BasicMazeGenerator {
+    internal class RandomTreeMazeGenerator : BasicMazeGenerator {
 
         CellsToVisit cellsToVisit = new CellsToVisit();
 

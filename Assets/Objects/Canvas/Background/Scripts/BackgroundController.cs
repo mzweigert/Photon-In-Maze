@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace PhotonInMaze.CanvasGame.Background {
-    public class BackgroundController : FlowFixedUpdateBehaviour {
+    internal class BackgroundController : FlowFixedUpdateBehaviour {
 
         private int lightLayer = 0;
         private Animator animator;

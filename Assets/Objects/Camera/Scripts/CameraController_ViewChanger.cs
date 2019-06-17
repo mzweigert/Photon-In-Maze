@@ -4,7 +4,7 @@ using PhotonInMaze.Common.Model;
 using UnityEngine;
 
 namespace PhotonInMaze.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
+    internal partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private void ChangeCameraView(float delta) {
             if(delta == 0f) {
@@ -55,7 +55,7 @@ namespace PhotonInMaze.GameCamera {
 
         public void ResizeCameraTo(Frame frame) {
 
-            if(mazeScript == null) {
+            if(mazeConfiguration == null) {
                 Debug.LogError("MazeScript not found!");
                 return;
             } else if(frame.IsFrameBoundsVisibleOnCamera(camera)) {

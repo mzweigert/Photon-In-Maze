@@ -1212,6 +1212,7 @@ GameObject:
   - component: {fileID: 949568340}
   - component: {fileID: 949568342}
   - component: {fileID: 949568341}
+  - component: {fileID: 949568343}
   m_Layer: 0
   m_Name: Maze
   m_TagString: Untagged
@@ -1242,12 +1243,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 949568338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dbd480039f60a344bdc0ff90b9d70b5, type: 3}
+  m_Script: {fileID: 11500000, guid: f8a979aa2029fb943b6b6602d24e301b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Algorithm: 0
-  _rows: 5
-  _columns: 5
 --- !u!114 &949568341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1269,9 +1267,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 949568338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ded39a045f123443be93764b1468669, type: 3}
+  m_Script: {fileID: 11500000, guid: e314cf0af13cf5f45929f095d61f2147, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pathLine: {fileID: 2100000, guid: 32cb26ec55ce66b429caad5f027af983, type: 2}
+  pathCurve: {fileID: 2100000, guid: f17c52120a720ed4280ce6f3682537bd, type: 2}
+  pathEnd: {fileID: 2100000, guid: 897cfb9a18d8f2645b7587eec6031aac, type: 2}
+  endHole: {fileID: 5529134782906127980, guid: af44c046a01a4ee4b85f4dc0f0dbdf3b, type: 3}
+--- !u!114 &949568343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949568338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227404e70965cd343b669fcece0c1f6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rows: 5
+  _columns: 5
+  _algorithm: 0
 --- !u!1 &1014450604
 GameObject:
   m_ObjectHideFlags: 0
@@ -1757,8 +1774,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maze: {fileID: 949568338}
-  floor: {fileID: 165842, guid: 8d3b36f175a633f429d7bda54c76550d, type: 3}
-  wall: {fileID: 144206, guid: 9de82ec743bb24449a99f5cf1e325d61, type: 3}
+  floor: {fileID: 165842, guid: 03637306b632ad64ab70cd385b38aa3e, type: 3}
+  wall: {fileID: 144206, guid: 2af060a79201164409019110a735299f, type: 3}
   blackHole: {fileID: 6190629074734153163, guid: 83149f6694816a044b0c53a0a475bd33,
     type: 3}
   whiteHole: {fileID: 6190629074734153163, guid: 13d7ade416853e04e844d1c0c196db12,
@@ -2734,6 +2751,10 @@ PrefabInstance:
       propertyPath: m_Text
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 247585336, guid: c1718602ee529b740b45bfeb6a106977, type: 3}
+      propertyPath: m_Color.a
+      value: 0.39215687
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1718602ee529b740b45bfeb6a106977, type: 3}
 --- !u!224 &1933326150 stripped
@@ -3243,6 +3264,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Area Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 2605116661911013698, guid: 20b658c91308caa4689779ff4c904693,
+        type: 3}
+      propertyPath: far clip plane
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 2605116661911013699, guid: 20b658c91308caa4689779ff4c904693,
         type: 3}

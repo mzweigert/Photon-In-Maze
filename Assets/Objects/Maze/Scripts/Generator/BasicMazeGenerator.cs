@@ -8,7 +8,7 @@ namespace PhotonInMaze.Maze.Generator {
     //<summary>
     //Basic class for maze generation logic
     //</summary>
-    public abstract class BasicMazeGenerator {
+    internal abstract class BasicMazeGenerator : IMazeGenerator {
 
         public int RowCount { get; }
         public int ColumnCount { get; }

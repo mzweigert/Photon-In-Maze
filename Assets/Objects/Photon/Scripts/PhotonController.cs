@@ -5,7 +5,7 @@ using PhotonInMaze.Provider;
 using UnityEngine;
 
 namespace PhotonInMaze.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         private IMazeController mazeController;
         private IPathToGoalManager pathToGoalManager;
