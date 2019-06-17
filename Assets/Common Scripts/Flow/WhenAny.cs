@@ -9,7 +9,7 @@ namespace PhotonInMaze.Common.Flow {
             return this;
         }
 
-        public void Invoke(State currentState = State.Start) {
+        public void Invoke(State currentState = State.GenerateMaze) {
             action?.Invoke();
         }
 

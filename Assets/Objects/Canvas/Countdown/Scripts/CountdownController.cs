@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 
 namespace PhotonInMaze.CanvasGame.CountDown {
-    public class CountdownController : FlowFixedUpdateBehaviour {
+    internal class CountdownController : FlowFixedUpdateBehaviour {
 
         private float elapsed;
         private int toStart;

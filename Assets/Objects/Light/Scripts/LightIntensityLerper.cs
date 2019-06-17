@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace PhotonInMaze.MazeLight {
-    public class LightIntensityLerper {
+    internal class LightIntensityLerper {
 
         private const float speed = 7.5f;
 

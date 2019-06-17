@@ -1,13 +1,13 @@
 ﻿
 namespace PhotonInMaze.Photon {
-    public enum TouchMovement {
+    internal enum TouchMovement {
         Left,
         Right,
         Up,
         Down
     };
 
-    public enum MovementEvent {
+    internal enum MovementEvent {
         Idle,
         Move,
         Teleport,

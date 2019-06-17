@@ -27,6 +27,12 @@ namespace PhotonInMaze.Provider {
             return maze;
         }
 
+        public IMazeConfiguration GetMazeConfiguration() {
+            var script = maze.GetComponent<IMazeConfiguration>();
+            LogIfObjectIsNull(script, "MazeConfiguration");
+            return script;
+        }
+
         public IMazeController GetMazeController() {
             var script = maze.GetComponent<IMazeController>();
             LogIfObjectIsNull(script, "MazeController");

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 
 namespace PhotonInMaze.CanvasGame.Arrow {
-    public class ArrowButtonController : FlowUpdateBehaviour, IArrowButtonController {
+    internal class ArrowButtonController : FlowUpdateBehaviour, IArrowButtonController {
 
         [Range(1, 255)]
         [SerializeField]

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace PhotonInMaze.CanvasGame.DebugGame {
-    public class DebugManager : MonoBehaviour {
+    internal class DebugManager : MonoBehaviour {
 
         private float deltaTime = 0.0f;
 

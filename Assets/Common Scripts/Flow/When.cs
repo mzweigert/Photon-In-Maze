@@ -12,7 +12,7 @@ namespace PhotonInMaze.Common.Flow {
             this.possibleState = possibleState;
         }
 
-        public void Invoke(State currentState = State.Start) {
+        public void Invoke(State currentState = State.GenerateMaze) {
             if(stateByAction.ContainsKey(currentState)) {
                 stateByAction[currentState].Invoke();
             } else if(orElseAction != null) {
@@ -55,7 +55,7 @@ namespace PhotonInMaze.Common.Flow {
     }
 
     public interface IInvoke {
-        void Invoke(State currentState = State.Start);
+        void Invoke(State currentState = State.GenerateMaze);
     }
 
     public interface IOrElse {

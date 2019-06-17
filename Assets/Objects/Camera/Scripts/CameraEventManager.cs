@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 
 namespace PhotonInMaze.GameCamera {
-    public class CameraEventManager {
+    internal class CameraEventManager {
 
         private Queue<ICameraEvent> events = new Queue<ICameraEvent>();
         private Optional<ICameraEvent> current = Optional<ICameraEvent>.Empty();

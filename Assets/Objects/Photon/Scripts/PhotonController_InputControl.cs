@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace PhotonInMaze.Photon {
-    public partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
 
         private Vector2 fingerStart, fingerEnd;
         private bool canSwipe = true;

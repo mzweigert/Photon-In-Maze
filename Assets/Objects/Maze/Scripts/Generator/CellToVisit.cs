@@ -5,7 +5,7 @@ namespace PhotonInMaze.Maze.Generator {
     //<summary>
     //Class representation of target cell
     //</summary>
-    public struct CellToVisit {
+    internal struct CellToVisit {
         public int Row { get; private set; }
         public int Column { get; private set; }
         public Direction MoveMade { get; private set; }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PhotonInMaze.MazeLight {
 
-    public class AreaLightController : FlowObserverBehaviour<IPhotonController, IPhotonState>, IAreaLightController {
+    internal class AreaLightController : FlowObserverBehaviour<IPhotonController, IPhotonState>, IAreaLightController {
 
         private AudioSource audioSource;
 

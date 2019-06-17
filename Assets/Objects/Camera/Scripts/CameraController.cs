@@ -5,7 +5,7 @@ using PhotonInMaze.Provider;
 using UnityEngine;
 
 namespace PhotonInMaze.GameCamera {
-    public partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
+    internal partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
 
         private enum CameraType {
             Area,
@@ -14,11 +14,12 @@ namespace PhotonInMaze.GameCamera {
         }
 
         private CameraEventManager cameraEventManager = new CameraEventManager();
-        private IMazeController mazeScript;
+        private IMazeConfiguration mazeConfiguration;
         private new Camera camera;
         private bool followThePhoton;
         private CameraType type;
         private Animator animator;
+        private IArrowButtonController arrowButtonController;
 
         [SerializeField]
         [Range(0.1f, 2f)]
@@ -53,15 +54,16 @@ namespace PhotonInMaze.GameCamera {
         }
 
         public override void OnInit() {
+            arrowButtonController = CanvasObjectsProvider.Instance.GetArrowButtonController();
             camera = GetComponent<Camera>();
-            mazeScript = MazeObjectsProvider.Instance.GetMazeController();
+            mazeConfiguration = MazeObjectsProvider.Instance.GetMazeConfiguration();
             float x = 0f, z = 0f, ratio = (float)Screen.width / Screen.height;
-            x = (mazeScript.Columns * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
-            z = (mazeScript.Rows * mazeScript.ScaleOfCellSide * 2f) - (mazeScript.LenghtOfCellSide / 2);
+            x = (mazeConfiguration.Columns * 2f) - (mazeConfiguration.LenghtOfCellSide / 2);
+            z = (mazeConfiguration.Rows * 2f) - (mazeConfiguration.LenghtOfCellSide / 2);
             camera.transform.position = initialCamPosition = new Vector3(x, 50, z);
 
-            float sizeForLongerColumnsLength = mazeScript.Columns * (mazeScript.LenghtOfCellSide / 2);
-            float sizeForLongerRowsLength = mazeScript.Rows * (mazeScript.LenghtOfCellSide / 2);
+            float sizeForLongerColumnsLength = mazeConfiguration.Columns * (mazeConfiguration.LenghtOfCellSide / 2);
+            float sizeForLongerRowsLength = mazeConfiguration.Rows * (mazeConfiguration.LenghtOfCellSide / 2);
             initialOrtographicSize = sizeForLongerColumnsLength * ratio > sizeForLongerRowsLength ?
                                      sizeForLongerColumnsLength : sizeForLongerRowsLength;
             camera.orthographicSize = initialOrtographicSize += offsetCam;
@@ -85,13 +87,12 @@ namespace PhotonInMaze.GameCamera {
                 cameraEventManager.TryRunCurrent();
             } else if(cameraEventManager.CanLoadNextEvent()) {
                 cameraEventManager.TryLoadNext();
-            } else if(Input.touchCount == 2 || Input.mouseScrollDelta.y != 0 &&
-                      !CanvasObjectsProvider.Instance.GetArrowButtonController().IsArrowPresent()) {
+            } else if((Input.touchCount == 2 || Input.mouseScrollDelta.y != 0) && !arrowButtonController.IsArrowPresent()) {
 
 #if UNITY_EDITOR
                 float deltaMagnitudeDiff = -Input.mouseScrollDelta.y * 20;
 #elif UNITY_ANDROID
-            float deltaMagnitudeDiff = CalculatePinchTouch(); 
+                float deltaMagnitudeDiff = CalculatePinchTouch(); 
 #endif
                 ChangeCameraView(deltaMagnitudeDiff);
             }

@@ -1,6 +1,6 @@
 ﻿
 namespace PhotonInMaze.GameCamera {
-    public interface ICameraEvent {
+    internal interface ICameraEvent {
 
         bool IsDone();
 

@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 
 namespace PhotonInMaze.Arrow {
-    public partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
+    internal partial class ArrowController : FlowFixedObserveableBehviour<ArrowState>, IArrowController {
 
         private void Move() {
 
