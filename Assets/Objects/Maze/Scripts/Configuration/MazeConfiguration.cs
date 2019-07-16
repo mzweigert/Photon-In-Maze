@@ -20,19 +20,21 @@ namespace PhotonInMaze.Maze {
         private MazeGenerationAlgorithm _algorithm = MazeGenerationAlgorithm.PureRecursive;
         public MazeGenerationAlgorithm Algorithm { get { return _algorithm; } }
 
-        public float LenghtOfCellSide { get { return 4f; } }
+        public float CellSideLength { get { return 4f; } }
+
+        public string Name { get { return gameObject.name; } }
 
         private byte stage = 0;
 
         public IMazeGenerator GetGenerator() {
             switch(Algorithm) {
                 case MazeGenerationAlgorithm.RandomTree:
-                    return new RandomTreeMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new RandomTreeMazeGenerator(Rows, Columns, CellSideLength);
                 case MazeGenerationAlgorithm.Division:
-                    return new DivisionMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new DivisionMazeGenerator(Rows, Columns, CellSideLength);
                 case MazeGenerationAlgorithm.PureRecursive:
                 default:
-                    return new RecursiveMazeGenerator(Rows, Columns, LenghtOfCellSide);
+                    return new RecursiveMazeGenerator(Rows, Columns, CellSideLength);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using PhotonInMaze.Common;
+using System;
 using System.Collections.Generic;
 
 
@@ -33,6 +34,10 @@ namespace PhotonInMaze.GameCamera {
                 }
 
             }
+        }
+
+        public bool IsEmpty() {
+            return events.Count <= 0 && current.HasNotValue;
         }
     }
 }

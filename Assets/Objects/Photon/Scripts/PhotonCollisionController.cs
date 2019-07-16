@@ -1,14 +1,13 @@
-﻿using PhotonInMaze.Common;
-using PhotonInMaze.Common.Controller;
-using PhotonInMaze.Common.Flow;
+﻿using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Common.Model;
 using PhotonInMaze.Particles;
+using PhotonInMaze.Provider;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace PhotonInMaze.Photon {
-    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal class PhotonCollisionController : FlowBehaviour {
 
         [SerializeField]
         private Transform leakedLightContainer;
@@ -20,6 +19,8 @@ namespace PhotonInMaze.Photon {
 
         private Dictionary<int, GameObject> blackHolesToLeakedLights = new Dictionary<int, GameObject>();
 
+        private PhotonMovementController movementController;
+
         void OnTriggerEnter(Collider other) {
             if(other.name.Equals(LIGHT_ABSORB_AREA)) {
                 GameObject particleLightInstance = Instantiate(particleLightTemplate, leakedLightContainer);
@@ -28,11 +29,13 @@ namespace PhotonInMaze.Photon {
                 blackHolesToLeakedLights.Add(GetKey(other), particleLightInstance);
             } else if(other.name.Equals("_TeleportArea")) {
                 HandeOnTriggerExitBlackHole(GetKey(other));
-                IMazeCell target = mazeController.GetWormholeExit(other.transform.parent.GetInstanceID());
-                PushToQueueMoves(target.Row, target.Column, MovementEvent.Teleport);
+                IMazeCell target = MazeObjectsProvider.Instance
+                    .GetMazeController()
+                    .GetWormholeExit(other.transform.parent.GetInstanceID());
+                movementController.Queue.PushMove(target.Row, target.Column, MovementEvent.Teleport);
                 Vector2Int nextMove = target.GetPossibleMovesCoords().First();
-                PushToQueueMoves(nextMove.x, nextMove.y, MovementEvent.Move);
-                PushToQueueMoves(nextMove.x, nextMove.y, MovementEvent.ExitFromWormhole);
+                movementController.Queue.PushMove(nextMove.x, nextMove.y, MovementEvent.Move);
+                movementController.Queue.PushMove(nextMove.x, nextMove.y, MovementEvent.ExitFromWormhole);
             }
         }
 
@@ -53,5 +56,12 @@ namespace PhotonInMaze.Photon {
 
         private int GetKey(Collider collider) => collider.transform.parent.Find(LIGHT_ABSORB_AREA).GetInstanceID();
 
+        public override void OnInit() {
+            movementController = GetComponent<PhotonMovementController>();
+        }
+
+        public override int GetInitOrder() {
+            return (int) InitOrder.PhotonCollision;
+        }
     }
 }

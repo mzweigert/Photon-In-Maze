@@ -1,25 +1,31 @@
-﻿using PhotonInMaze.Common.Controller;
-using PhotonInMaze.Common.Flow;
-using PhotonInMaze.Common.Model;
+﻿using PhotonInMaze.Provider;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace PhotonInMaze.Photon {
-    internal partial class PhotonController : FlowObserveableBehviour<IPhotonState>, IPhotonController {
+    internal class PhotonInputControl {
 
         private Vector2 fingerStart, fingerEnd;
         private bool canSwipe = true;
-        EventSystem es;
+        private EventSystem es;
+        private float aspectRatio;
 
-        private void CheckButtonPress() {
+        private PhotonMovementQueue movementQueue;
+
+        internal PhotonInputControl(PhotonMovementQueue movementQueue) {
+            aspectRatio = ObjectsProvider.Instance.GetAreaCamera().aspect;
+            this.movementQueue = movementQueue;
+        }
+
+        internal void CheckButtonPress() {
             if(CheckIfAnyPressed(KeyCode.W, KeyCode.UpArrow)) {
-                SaveMove(TouchMovement.Up);
+                movementQueue.SaveMove(TouchMovement.Up);
             } else if(CheckIfAnyPressed(KeyCode.A, KeyCode.LeftArrow)) {
-                SaveMove(TouchMovement.Left);
+                movementQueue.SaveMove(TouchMovement.Left);
             } else if(CheckIfAnyPressed(KeyCode.S, KeyCode.DownArrow)) {
-                SaveMove(TouchMovement.Down);
+                movementQueue.SaveMove(TouchMovement.Down);
             } else if(CheckIfAnyPressed(KeyCode.D, KeyCode.RightArrow)) {
-                SaveMove(TouchMovement.Right);
+                movementQueue.SaveMove(TouchMovement.Right);
             }
         }
 
@@ -32,7 +38,7 @@ namespace PhotonInMaze.Photon {
             return false;
         }
 
-        private void CheckTouch() {
+        internal void CheckTouch() {
             if(Input.touchCount == 1) {
                 Touch touch = Input.GetTouch(0);
                 es = EventSystem.current;
@@ -47,24 +53,19 @@ namespace PhotonInMaze.Photon {
                 }
                 if(touch.phase == TouchPhase.Moved && canSwipe) {
                     fingerEnd = touch.position;
-                    TouchMovement movementDirection = GetTouchMovementDirection();
-                    SaveMove(movementDirection);
+                    TouchMovementEvent movementEvent = TouchMovementEvent.GetTouchMovementDirection(fingerStart, fingerEnd);
+                    bool moveToShort = !((movementEvent.IsHorizontal() && movementEvent.delta > Screen.width / (8 * aspectRatio)) ||
+                        (movementEvent.IsVertical() && movementEvent.delta > (Screen.height  / 8)));
+                    if(moveToShort) {
+                        return;
+                    }
+                    movementQueue.SaveMove(movementEvent.direction);
                     fingerStart = touch.position;
                     canSwipe = false;
                 }
                 if(touch.phase == TouchPhase.Ended) {
                     canSwipe = true;
                 }
-            }
-        }
-
-        private TouchMovement GetTouchMovementDirection() {
-            float xMove = Mathf.Abs(fingerStart.x - fingerEnd.x);
-            float yMove = Mathf.Abs(fingerStart.y - fingerEnd.y);
-            if(xMove > yMove) {
-                return (fingerEnd.x - fingerStart.x) > 0.65f ? TouchMovement.Right : TouchMovement.Left;
-            } else {
-                return (fingerEnd.y - fingerStart.y) > 0.65 ? TouchMovement.Up : TouchMovement.Down;
             }
         }
 

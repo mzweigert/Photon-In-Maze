@@ -109,7 +109,7 @@ namespace PhotonInMaze.CanvasGame.Arrow {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Default;
+            return (int) InitOrder.Default;
         }
 
         public bool IsArrowPresent() {

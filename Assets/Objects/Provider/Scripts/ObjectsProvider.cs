@@ -1,4 +1,5 @@
-﻿using PhotonInMaze.Common;
+﻿using System;
+using PhotonInMaze.Common;
 using PhotonInMaze.Common.Controller;
 using PhotonInMaze.Common.Flow;
 using UnityEngine;
@@ -48,9 +49,16 @@ namespace PhotonInMaze.Provider {
             return photon;
         }
 
-        public IPhotonController GetPhotonController() {
-            var script = photon.GetComponent<IPhotonController>();
-            LogIfObjectIsNull(script, "PhotonConroller");
+        public IPhotonMovementController GetPhotonMovementController() {
+            var script = photon.GetComponent<IPhotonMovementController>();
+            LogIfObjectIsNull(script, "IPhotonMovementController");
+            return script;
+        }
+
+
+        public IPhotonConfiguration GetPhotonConfiguration() {
+            var script = photon.GetComponent<IPhotonConfiguration>();
+            LogIfObjectIsNull(script, "PhotonConfiguration");
             return script;
         }
 

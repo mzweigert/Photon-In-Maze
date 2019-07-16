@@ -54,8 +54,8 @@ namespace PhotonInMaze.Arrow {
         private void NotifyCameraAboutResize(int sizeOfPath) {
 
             LinkedListNode<IMazeCell> iterateCell = currentCell.Next;
-            IMazeCell photonPos = ObjectsProvider.Instance.GetPhotonController().GetCurrentMazeCellPosition();
-            float offset = MazeObjectsProvider.Instance.GetMazeConfiguration().LenghtOfCellSide / 2;
+            IMazeCell photonPos = ObjectsProvider.Instance.GetPhotonMovementController().CurrentMazeCell;
+            float offset = MazeObjectsProvider.Instance.GetMazeConfiguration().CellSideLength / 2;
             Vector2 leftUpBound = new Vector2(iterateCell.Value.X - offset, iterateCell.Value.Y - offset);
             Vector2 rightDownBound = new Vector2(iterateCell.Value.X + offset, iterateCell.Value.Y + offset);
             Frame frame = new Frame(leftUpBound, rightDownBound);
@@ -75,7 +75,7 @@ namespace PhotonInMaze.Arrow {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Arrow;
+            return (int)InitOrder.Arrow;
         }
 
     }

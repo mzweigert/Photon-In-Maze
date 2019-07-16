@@ -4,7 +4,8 @@ namespace PhotonInMaze.Common.Controller {
         int Columns { get; }
         int Rows { get; }
         MazeGenerationAlgorithm Algorithm { get; }
-        float LenghtOfCellSide { get; }
+        float CellSideLength { get; }
+        string Name { get; }
 
         IMazeGenerator GetGenerator();
     }

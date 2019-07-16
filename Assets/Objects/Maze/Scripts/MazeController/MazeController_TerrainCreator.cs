@@ -54,7 +54,7 @@ namespace PhotonInMaze.Maze {
             Transform cellsRootTransform = transform.Find("Cells");
             if(cellsRootTransform != null) {
                 Destroy(cellsRootTransform.gameObject);
-            } 
+            }
 
             GameObject cells = new GameObject() { name = "Cells" };
             cells.transform.parent = transform;
@@ -68,25 +68,25 @@ namespace PhotonInMaze.Maze {
             }
             GameObject area = new GameObject { name = "Area" };
             area.transform.parent = transform;
-            float rowBound = (configuration.Rows * configuration.LenghtOfCellSide / 2) - configuration.LenghtOfCellSide / 2;
-            float columnBound = (configuration.Columns * configuration.LenghtOfCellSide / 2) - configuration.LenghtOfCellSide / 2;
-            GameObject floor = Instantiate(floorPrototype, new Vector3(columnBound, 0, rowBound), 
+            float rowBound = (configuration.Rows * configuration.CellSideLength / 2) - configuration.CellSideLength / 2;
+            float columnBound = (configuration.Columns * configuration.CellSideLength / 2) - configuration.CellSideLength / 2;
+            GameObject floor = Instantiate(floorPrototype, new Vector3(columnBound, 0, rowBound),
                 Quaternion.Euler(0, 0, 0), area.transform);
-            floor.transform.localScale = new Vector3(configuration.Columns * configuration.LenghtOfCellSide, 0.25f,
-                configuration.Rows * configuration.LenghtOfCellSide);
+            floor.transform.localScale = new Vector3(configuration.Columns * configuration.CellSideLength, 0.25f,
+                configuration.Rows * configuration.CellSideLength);
             floor.name = "Floor";
             Vector3 wallPos; Quaternion wallQuat; float xLength, offset;
             for(int i = 0; i < 4; i++) {
                 bool column = i % 2 == 0;
 
                 if(column) {
-                    offset = i > 1 ? configuration.LenghtOfCellSide : -configuration.LenghtOfCellSide;
+                    offset = i > 1 ? configuration.CellSideLength : -configuration.CellSideLength;
                     wallPos = new Vector3(i * columnBound + offset / 2, area.transform.position.y, rowBound);
                     wallQuat = Quaternion.Euler(0, (i - 1) * 90, 0);
                     xLength = configuration.Rows;
 
                 } else {
-                    offset = i > 2 ? configuration.LenghtOfCellSide : -configuration.LenghtOfCellSide;
+                    offset = i > 2 ? configuration.CellSideLength : -configuration.CellSideLength;
                     wallPos = new Vector3(columnBound, area.transform.position.y, (i - 1) * rowBound + offset / 2);
                     wallQuat = Quaternion.Euler(0, (i + 1) * 90, 0);
                     xLength = configuration.Columns;
@@ -104,29 +104,29 @@ namespace PhotonInMaze.Maze {
         private void CreateWalls(IMazeCell cell, GameObject cellGameObject) {
             GameObject wall;
             if(cell.Walls.Contains(Direction.Right) && cell.Column + 1 < configuration.Columns) {
-                wall = Instantiate(wallPrototype, 
-                    new Vector3(cell.X + configuration.LenghtOfCellSide / 2, 0, cell.Y) + wallPrototype.transform.position,
+                wall = Instantiate(wallPrototype,
+                    new Vector3(cell.X + configuration.CellSideLength / 2, 0, cell.Y) + wallPrototype.transform.position,
                     Quaternion.Euler(0, 90, 0)) as GameObject;// right
                 wall.name = "WallRight";
                 wall.transform.parent = cellGameObject.transform;
             }
             if(cell.Walls.Contains(Direction.Front) && cell.Row + 1 < configuration.Rows) {
-                wall = Instantiate(wallPrototype, 
-                    new Vector3(cell.X, 0, cell.Y + configuration.LenghtOfCellSide / 2) + wallPrototype.transform.position,
+                wall = Instantiate(wallPrototype,
+                    new Vector3(cell.X, 0, cell.Y + configuration.CellSideLength / 2) + wallPrototype.transform.position,
                     Quaternion.Euler(0, 0, 0)) as GameObject;// front
                 wall.name = "WallFront";
                 wall.transform.parent = cellGameObject.transform;
             }
             if(cell.Walls.Contains(Direction.Left) && cell.Column > 0) {
-                wall = Instantiate(wallPrototype, 
-                    new Vector3(cell.X - configuration.LenghtOfCellSide / 2, 0, cell.Y) + wallPrototype.transform.position, 
+                wall = Instantiate(wallPrototype,
+                    new Vector3(cell.X - configuration.CellSideLength / 2, 0, cell.Y) + wallPrototype.transform.position,
                     Quaternion.Euler(0, 270, 0)) as GameObject;// left
                 wall.name = "WallLeft";
                 wall.transform.parent = cellGameObject.transform;
             }
             if(cell.Walls.Contains(Direction.Back) && cell.Row > 0) {
-                wall = Instantiate(wallPrototype, 
-                    new Vector3(cell.X, 0, cell.Y - configuration.LenghtOfCellSide / 2) + wallPrototype.transform.position, 
+                wall = Instantiate(wallPrototype,
+                    new Vector3(cell.X, 0, cell.Y - configuration.CellSideLength / 2) + wallPrototype.transform.position,
                     Quaternion.Euler(0, 180, 0)) as GameObject;// back
                 wall.name = "WallBack";
                 wall.transform.parent = cellGameObject.transform;

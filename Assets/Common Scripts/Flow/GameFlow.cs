@@ -50,6 +50,10 @@ namespace PhotonInMaze.Common.Flow {
         public IThenAny WhenIsAny() {
             return new WhenAny();
         }
+
+        public IThenAny WhenIsAnyAnd(Func<bool> predicate) {
+            return new WhenAny(predicate);
+        }
     }
 
 }

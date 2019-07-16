@@ -21,7 +21,7 @@ namespace PhotonInMaze.CanvasGame.Background {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Default;
+            return (int)InitOrder.Default;
         }
 
         private void ChangeLight(int layer, string transitionName) {

@@ -5,32 +5,17 @@ using PhotonInMaze.Provider;
 using UnityEngine;
 
 namespace PhotonInMaze.GameCamera {
-    internal partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
+    internal partial class CameraController : FlowObserverBehaviour<IPhotonMovementController, IPhotonState>, ICameraController {
 
-        private enum CameraType {
-            Area,
-            AbovePhoton,
-            BetweenPhotonAndArrow
-        }
+        private CameraViewCalculator viewCalculator;
+        private CameraViewChanger viewChanger;
+        private CameraInputControl inputControl;
+        private CameraConfiguration configuration;
+        private CameraEventController eventController;
 
-        private CameraEventManager cameraEventManager = new CameraEventManager();
-        private IMazeConfiguration mazeConfiguration;
         private new Camera camera;
-        private bool followThePhoton;
-        private CameraType type;
-        private Animator animator;
-        private IArrowButtonController arrowButtonController;
 
-        [SerializeField]
-        [Range(0.1f, 2f)]
-        private float cameraSpeed = 0.15f;
-
-        private Vector3 initialCamPosition, currentPhotonPosition, previousPhotonPosition;
-
-        private float distanceBetweenBaseCamPosAndPhoton, currentDistanceBetweenCamAndPhoton,
-                      initialOrtographicSize,
-                      offsetCam = 3.5f,
-                      deltaMagnitudeMultiplier = 0.01f;
+        private Vector3 currentPhotonPosition, previousPhotonPosition;
 
         public override void OnNext(IPhotonState state) {
             if(state.RealPosition.Equals(currentPhotonPosition)) {
@@ -40,67 +25,65 @@ namespace PhotonInMaze.GameCamera {
             previousPhotonPosition = currentPhotonPosition;
             currentPhotonPosition = state.RealPosition;
 
-            if(!followThePhoton && IsPhotonVisibleOnCamera(currentPhotonPosition)) {
-                return;
-            }
-
-            if(type == CameraType.BetweenPhotonAndArrow) {
-                type = CameraType.AbovePhoton;
-                cameraEventManager.Add(RepeatedEvent.Of(BackAbovePhoton));
-            } else {
-                Vector3 targetCamPosition = CalculatePositionBasedOnPhotonPositions(currentPhotonPosition, previousPhotonPosition);
+            if(configuration.type == GameCameraType.Moved) {
+                ICameraEvent cameraEvent;
+                if(configuration.followThePhoton) {
+                    configuration.type = GameCameraType.AbovePhoton;
+                    cameraEvent = viewChanger.BackAbovePosition(() => currentPhotonPosition);
+                } else {
+                    configuration.type = GameCameraType.Area;
+                    cameraEvent = viewChanger.BackToInitialPosition();
+                }
+                eventController.AddEventToQueue(cameraEvent);
+                inputControl.Reset();
+            } else if(configuration.type == GameCameraType.BetweenPhotonAndArrow || configuration.type == GameCameraType.Zoomed) {
+                configuration.type = GameCameraType.AbovePhoton;
+                ICameraEvent cameraEvent = viewChanger.BackAbovePosition(() => currentPhotonPosition);
+                eventController.AddEventToQueue(cameraEvent);
+            } else if(configuration.followThePhoton || !viewCalculator.IsPhotonVisibleOnCamera(currentPhotonPosition)) {
+                Vector3 targetCamPosition = viewCalculator.CalculatePositionBasedOnPhotonPositions(currentPhotonPosition, previousPhotonPosition);
                 camera.transform.position = targetCamPosition;
             }
         }
 
-        public override void OnInit() {
-            arrowButtonController = CanvasObjectsProvider.Instance.GetArrowButtonController();
-            camera = GetComponent<Camera>();
-            mazeConfiguration = MazeObjectsProvider.Instance.GetMazeConfiguration();
-            float x = 0f, z = 0f, ratio = (float)Screen.width / Screen.height;
-            x = (mazeConfiguration.Columns * 2f) - (mazeConfiguration.LenghtOfCellSide / 2);
-            z = (mazeConfiguration.Rows * 2f) - (mazeConfiguration.LenghtOfCellSide / 2);
-            camera.transform.position = initialCamPosition = new Vector3(x, 50, z);
 
-            float sizeForLongerColumnsLength = mazeConfiguration.Columns * (mazeConfiguration.LenghtOfCellSide / 2);
-            float sizeForLongerRowsLength = mazeConfiguration.Rows * (mazeConfiguration.LenghtOfCellSide / 2);
-            initialOrtographicSize = sizeForLongerColumnsLength * ratio > sizeForLongerRowsLength ?
-                                     sizeForLongerColumnsLength : sizeForLongerRowsLength;
-            camera.orthographicSize = initialOrtographicSize += offsetCam;
-            camera.fieldOfView = CalculateFOV(initialOrtographicSize, initialCamPosition.y);
-            camera.orthographic = true;
-            type = CameraType.Area;
-            currentPhotonPosition = previousPhotonPosition = ObjectsProvider.Instance.GetPhotonController().GetInitialPosition();
-            followThePhoton = false;
-            animator = transform.GetComponent<Animator>();
+        public override void OnInit() {
+            camera = GetComponent<Camera>();
+
+            currentPhotonPosition = previousPhotonPosition =
+                ObjectsProvider.Instance.GetPhotonConfiguration().InitialPosition;
+
+            eventController = camera.GetComponent<CameraEventController>();
+            configuration = camera.GetComponent<CameraConfiguration>();
+            viewCalculator = new CameraViewCalculator(camera);
+            viewChanger = new CameraViewChanger(camera, viewCalculator);
+            inputControl = new CameraInputControl(camera, viewChanger);
         }
 
         public override IInvoke OnLoop() {
             return GameFlowManager.Instance.Flow
-                .WhenIsAny()
-                .ThenDo(WaitForCameraEvent)
+                .WhenIsAnyAnd(() => eventController.IsQueueEmpty())
+                .ThenDo(inputControl.Check)
                 .Build();
         }
 
-        private void WaitForCameraEvent() {
-            if(cameraEventManager.CanRunCurrent()) {
-                cameraEventManager.TryRunCurrent();
-            } else if(cameraEventManager.CanLoadNextEvent()) {
-                cameraEventManager.TryLoadNext();
-            } else if((Input.touchCount == 2 || Input.mouseScrollDelta.y != 0) && !arrowButtonController.IsArrowPresent()) {
-
-#if UNITY_EDITOR
-                float deltaMagnitudeDiff = -Input.mouseScrollDelta.y * 20;
-#elif UNITY_ANDROID
-                float deltaMagnitudeDiff = CalculatePinchTouch(); 
-#endif
-                ChangeCameraView(deltaMagnitudeDiff);
-            }
-        }
-
         public override int GetInitOrder() {
-            return InitOrder.Camera;
+            return (int) InitOrder.CameraController;
         }
 
+        public void ResizeCameraTo(Frame frame) {
+
+            if(frame.IsFrameBoundsVisibleOnCamera(camera)) {
+                return;
+            }
+
+            Vector3 targetCamPosition = viewCalculator.CalculateResizePosition(frame);
+            float ortSize = frame.GetXDistance() * camera.aspect > frame.GetYDistance() ?
+                            frame.GetXDistance() / 2 :
+                            (frame.GetYDistance() / 2) / camera.aspect;
+
+            ICameraEvent cameraEvent = viewChanger.GetResizeEvent(() => targetCamPosition, () => currentPhotonPosition, ortSize);
+            eventController.AddEventToQueue(cameraEvent);
+        }
     }
 }

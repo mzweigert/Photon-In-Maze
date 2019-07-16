@@ -48,7 +48,7 @@ namespace PhotonInMaze.CanvasGame.CountDown {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Default;
+            return (int) InitOrder.Default;
         }
     }
 }
