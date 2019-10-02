@@ -42,7 +42,7 @@ namespace PhotonInMaze.Maze {
 
  
         public override int GetInitOrder() {
-            return InitOrder.PathToGoalManager;
+            return (int)InitOrder.PathToGoalManager;
         }
 
         public LinkedListNode<IMazeCell> GetFirstFromPath() {

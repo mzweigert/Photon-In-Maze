@@ -16,7 +16,7 @@ namespace PhotonInMaze.Maze {
             IMazeConfiguration configuration = MazeObjectsProvider.Instance.GetMazeConfiguration();
             rows = configuration.Rows;
             columns = configuration.Columns;
-            cellLengthSide = configuration.LenghtOfCellSide;
+            cellLengthSide = configuration.CellSideLength;
 
             maze = new MazeCell[rows, columns];
             for(int row = 0; row < rows; row++) {
@@ -28,7 +28,7 @@ namespace PhotonInMaze.Maze {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.MazeCellManager;
+            return (int) InitOrder.MazeCellManager;
         }
 
         public bool IsATrap(HashSet<IMazeCell> visitedCells, IMazeCell currentCell) {

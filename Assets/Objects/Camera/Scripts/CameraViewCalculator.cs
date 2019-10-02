@@ -1,44 +1,31 @@
 ﻿using PhotonInMaze.Common.Controller;
-using PhotonInMaze.Common.Flow;
 using PhotonInMaze.Common.Model;
+using PhotonInMaze.Provider;
 using System;
 using UnityEngine;
 
 namespace PhotonInMaze.GameCamera {
-    internal partial class CameraController : FlowObserverBehaviour<IPhotonController, IPhotonState>, ICameraController {
+    internal class CameraViewCalculator {
 
-        private float CalculatePinchTouch() {
-            if(Input.touchCount < 2) {
-                return 0f;
-            }
-            Touch touchZero = Input.GetTouch(0);
-            Touch touchOne = Input.GetTouch(1);
+        private Camera camera;
 
-            // Find the position in the previous frame of each touch.
-            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
-            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
-
-            // Find the magnitude of the vector (the distance) between the touches in each frame.
-            float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
-            float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
-
-            // Find the difference in the distances between each frame.
-            return prevTouchDeltaMag - touchDeltaMag;
+        public CameraViewCalculator(Camera camera) {
+            this.camera = camera;
         }
 
-        private float CalculateOrtographicSize() {
+        internal float CalculateOrtographicSize() {
             float tg = Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad / 2);
             return tg * camera.transform.position.y; ;
         }
 
-        private float CalculateFOV(float x, float y) {
+        internal float CalculateFOV(float x, float y) {
             Vector2 source, target;
             source = new Vector2(0, y);
             target = new Vector2(x, y);
             return Vector2.Angle(source, target) * 2;
         }
 
-        private Vector3 CalculatePositionBasedOnPhotonPositions(Vector3 currentPhotonPosition, Vector3 previousPhotonPosition) {
+        internal Vector3 CalculatePositionBasedOnPhotonPositions(Vector3 currentPhotonPosition, Vector3 previousPhotonPosition) {
             Vector3 targetCamPosition = camera.transform.position;
             float deltaX = Math.Abs(currentPhotonPosition.x - previousPhotonPosition.x);
             if(deltaX > 0) {
@@ -51,8 +38,15 @@ namespace PhotonInMaze.GameCamera {
             return targetCamPosition;
         }
 
+        internal bool IsAllMazeVisibleOnCamera() {
+            IMazeConfiguration mazeConfiguration = MazeObjectsProvider.Instance.GetMazeConfiguration();
+            float columnsSize = mazeConfiguration.Columns * mazeConfiguration.CellSideLength;
+            float rowsSize = mazeConfiguration.Rows * mazeConfiguration.CellSideLength;
+            Frame mazeFrame = new Frame(Vector2.zero, new Vector2(columnsSize, rowsSize));
+            return mazeFrame.IsFrameBoundsVisibleOnCamera(camera);
+        }
 
-        private Vector3 CalculateResizePosition(Frame frame) {
+        internal Vector3 CalculateResizePosition(Frame frame) {
             float halfXDistance = frame.GetXDistance() / 2, halfYDistance = frame.GetYDistance() / 2;
 
             float tg, y, angle;
@@ -68,8 +62,9 @@ namespace PhotonInMaze.GameCamera {
             return new Vector3(frame.GetCenterOfX(), y, frame.GetCenterOfY());
         }
 
-        private bool IsPhotonVisibleOnCamera(Vector3 currentPhotonPosition) {
-            Frame frame = new Frame(currentPhotonPosition, mazeConfiguration.LenghtOfCellSide / 2);
+        internal bool IsPhotonVisibleOnCamera(Vector3 currentPhotonPosition) {
+            float lengthOfCellSide = MazeObjectsProvider.Instance.GetMazeConfiguration().CellSideLength;
+            Frame frame = new Frame(currentPhotonPosition, lengthOfCellSide / 2);
             return frame.IsFrameBoundsVisibleOnCamera(camera);
         }
     }

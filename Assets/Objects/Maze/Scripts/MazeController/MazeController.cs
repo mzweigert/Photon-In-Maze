@@ -29,8 +29,24 @@ namespace PhotonInMaze.Maze {
 
             floorPrototype = MazeObjectsProvider.Instance.GetFloor();
             Vector3 floorScale = floorPrototype.transform.localScale;
-            floorScale.x = floorScale.z = configuration.LenghtOfCellSide;
+            floorScale.x = floorScale.z = configuration.CellSideLength;
             floorPrototype.transform.localScale = floorScale;
+            InitCollider();
+        }
+
+        private void InitCollider() {
+            BoxCollider collider = GetComponent<BoxCollider>();
+            if(collider == null) {
+                collider = gameObject.AddComponent<BoxCollider>();
+            }
+            float cellLength = configuration.CellSideLength;
+            collider.center = new Vector3(
+                (configuration.Columns * cellLength - cellLength) / 2,
+                1.5f,
+                (configuration.Rows * cellLength - cellLength) / 2
+            );
+
+            collider.size = new Vector3(configuration.Columns * cellLength, 3f, configuration.Rows * cellLength);
         }
 
         public override IInvoke OnLoop() {
@@ -54,7 +70,7 @@ namespace PhotonInMaze.Maze {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Maze;
+            return (int) InitOrder.Maze;
         }
 
         private void NextStage() {

@@ -7,13 +7,16 @@ using UnityEngine;
 
 namespace PhotonInMaze.MazeLight {
 
-    internal class AreaLightController : FlowObserverBehaviour<IPhotonController, IPhotonState>, IAreaLightController {
+    internal class AreaLightController : FlowObserverBehaviour<IPhotonMovementController, IPhotonState>, IAreaLightController {
 
         private AudioSource audioSource;
 
         private new Light light;
         private LightIntensityLerper dimLight, turnOnLight;
+        [SerializeField]
+        [Range(0.075f, 1.75f)]
         private float maxLightIntensity = 1.75f, minLightIntensity = 0.075f;
+
         private float onePercentLightInensity;
 
         private int pathToGoalCount = 1;
@@ -51,7 +54,7 @@ namespace PhotonInMaze.MazeLight {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.DirectionalLight;
+            return (int)InitOrder.DirectionalLight;
         }
 
     }

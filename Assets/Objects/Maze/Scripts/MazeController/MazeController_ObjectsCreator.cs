@@ -14,17 +14,13 @@ namespace PhotonInMaze.Maze {
         public HashSet<IMazeCell> BlackHolesPositions { get; private set; }
         public HashSet<IMazeCell> WhiteHolesPositions { get; private set; }
 
-        private enum HoleType {
-            Black, White
-        }
-
         private Optional<GameObject> CreateHole(HoleType type, IMazeCell cell, Transform cellGameObject, ref byte counter) {
             if(cell.Walls.Count < 3) {
                 return Optional<GameObject>.Empty();
             }
             GameObject hole = null;
             counter++;
-            if(!cell.IsStartCell() && !cell.IsGoal && counter == 10) {
+            if(!cell.IsStartCell() && !cell.IsGoal && counter == 5) {
                 if(type == HoleType.Black) {
                     GameObject blackHolePrototype = MazeObjectsProvider.Instance.GetBlackHole();
                     hole = Instantiate(blackHolePrototype, cellGameObject);

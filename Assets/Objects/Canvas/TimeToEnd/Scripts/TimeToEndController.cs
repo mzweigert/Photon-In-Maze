@@ -36,7 +36,7 @@ namespace PhotonInMaze.CanvasGame.TimeToEnd {
         }
 
         public override int GetInitOrder() {
-            return InitOrder.Default;
+            return (int)InitOrder.Default;
         }
     }
 }

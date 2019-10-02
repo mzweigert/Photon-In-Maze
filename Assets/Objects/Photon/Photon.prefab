@@ -39,10 +39,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1266353019625233487}
-  - component: {fileID: 8580107653316397523}
   - component: {fileID: 898113823628098342}
   - component: {fileID: 4871518485543486385}
   - component: {fileID: 8017580473353330166}
+  - component: {fileID: 335813631}
+  - component: {fileID: 7480954710032258005}
+  - component: {fileID: 6460773735543043724}
+  - component: {fileID: 3677745270047480025}
   m_Layer: 0
   m_Name: Photon
   m_TagString: Untagged
@@ -68,22 +71,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8580107653316397523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3930738664714619464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6b48da6c05ed5e47943ac3d91b06cc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PhotonSpeed: 0.75
-  leakedLightContainer: {fileID: 4947372675846508579}
-  particleLightTemplate: {fileID: 7969429887781247636, guid: 37cb39e042c90fb44bae0fdd6950ec40,
-    type: 3}
 --- !u!135 &898113823628098342
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -132,6 +119,58 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &335813631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3930738664714619464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22dfba8641a7e0142b57884e2f985db5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0.75
+--- !u!114 &7480954710032258005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3930738664714619464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac63b047de0ee0d4daf040a55e7fb393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6460773735543043724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3930738664714619464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ac88b084539f43aed50335d3819fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leakedLightContainer: {fileID: 4947372675846508579}
+  particleLightTemplate: {fileID: 7969429887781247636, guid: 37cb39e042c90fb44bae0fdd6950ec40,
+    type: 3}
+--- !u!114 &3677745270047480025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3930738664714619464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba7ad1b2acd301478ec170b189a84ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4534758276423482616
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +477,7 @@ ParticleSystem:
   m_GameObject: {fileID: 8588540225712922084}
   serializedVersion: 6
   lengthInSec: 5
-  simulationSpeed: 2
+  simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
@@ -1172,7 +1211,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5036,8 +5075,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xRotation: 0
-  yRotation: 5
-  zRotation: 10
+  yRotation: 2.5
+  zRotation: 5
 --- !u!1 &9202287702151098504
 GameObject:
   m_ObjectHideFlags: 0
@@ -5080,7 +5119,7 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 7.5
+  m_Intensity: 0
   m_Range: 15
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -5125,8 +5164,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -4.4415697e-16, y: 1.3292285e+36, z: 1.5046328e-36,
-    w: 6.3108872e-30}
+  m_BoundingSphereOverride: {x: 0, y: -1.1216273e-16, z: 8.38e-43, w: -1.6196022e-16}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0

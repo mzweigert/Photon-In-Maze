@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace PhotonInMaze.GameCamera {
     internal class OneShotEvent : ICameraEvent {
 
