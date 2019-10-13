@@ -24,7 +24,7 @@ namespace PhotonInMaze.GameCamera {
 
         internal float PinchIntensive { get { return pinchIntensive * 0.01f; } }
 
-        internal const float offsetCam = 3.5f;
+        internal const float offsetCam = 2f;
 
         internal readonly float minCameraYPosition = 10f;
 
@@ -38,10 +38,10 @@ namespace PhotonInMaze.GameCamera {
             type = GameCameraType.Area;
             followThePhoton = false;
             Camera camera = GetComponent<Camera>();
-            IMazeConfiguration mazeConfiguration = MazeObjectsProvider.Instance.GetMazeConfiguration(); 
-            float x = 0f, z = 0f, ratio = (float)Screen.width / Screen.height;
-            x = (mazeConfiguration.Columns * 2f) - (mazeConfiguration.CellSideLength / 2);
-            z = (mazeConfiguration.Rows * 2f) - (mazeConfiguration.CellSideLength / 2);
+            IMazeConfiguration mazeConfiguration = MazeObjectsProvider.Instance.GetMazeConfiguration();
+            float ratio = (float)Screen.width / Screen.height;
+            float x = mazeConfiguration.Columns * 2f - mazeConfiguration.CellSideLength / 2;
+            float z = mazeConfiguration.Rows * 2f - mazeConfiguration.CellSideLength / 2;
             camera.transform.position = initialCameraPosition = new Vector3(x, 50, z);
 
             float sizeForLongerColumnsLength = mazeConfiguration.Columns * (mazeConfiguration.CellSideLength / 2);
