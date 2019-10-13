@@ -6,6 +6,11 @@ using UnityEngine;
 namespace PhotonInMaze.Maze {
     internal class MazeConfiguration : MonoBehaviour, IMazeConfiguration {
 
+        [Range(1, 10)]
+        [SerializeField]
+        private int _secondsToStart = 3;
+        public int SecondsToStart { get { return _secondsToStart; } }
+
         [Range(5, 50)]
         [SerializeField]
         private int _rows = 5;
